@@ -10,4 +10,4 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools
 
 git-cms-addpkg RecoEgamma/PhotonIdentification
 
-svn checkout https://github.com/JINGFFF/test/trunk/16/VAJets
+git clone -b 16_fakeLepton https://github.com/JINGFFF/fullRun2VBSWG.git
