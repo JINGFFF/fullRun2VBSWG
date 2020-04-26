@@ -20,4 +20,4 @@ git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysi
 
 git cms-addpkg RecoMET/METFilters
 
-git clone -b 18 https://github.com/JINGFFF/fullRun2VBSWG.git
+svn checkout https://github.com/JINGFFF/test/trunk/18/VAJets
