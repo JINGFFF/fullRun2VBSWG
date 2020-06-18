@@ -1,7 +1,7 @@
 from WMCore.Configuration import Configuration
 config = Configuration()
 config.section_("General")
-config.General.requestName   = 'fullrun2_2017_WGJJ_v1'
+config.General.requestName   = 'fullrun2_2017_WZ_v1'
 config.General.transferLogs = True
 
 config.section_("JobType")
@@ -13,13 +13,13 @@ config.JobType.allowUndistributedCMSSW = True
 
 config.section_("Data")
 ##config.Data.outputPrimaryDataset = 'VBS_WGAMMA_94X'
-config.Data.inputDataset = '/LNuAJJ_EWK_MJJ-120_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM'
+config.Data.inputDataset = '/WZ_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_PU2017_94X_mc2017_realistic_v14-v1/MINIAODSIM'
 config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 2
 config.Data.totalUnits = -1
 config.Data.publication = False
-config.Data.outputDatasetTag = 'fullrun2_2017_WGJJ_v1'
+config.Data.outputDatasetTag = 'fullrun2_2017_WZ_v1'
 
 config.section_("Site")
 config.Site.storageSite = 'T2_CN_Beijing'

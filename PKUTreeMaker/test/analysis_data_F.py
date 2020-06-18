@@ -72,27 +72,27 @@ triggerSummaryLabel      = "hltTriggerSummaryAOD"
 hltProcess = "HLT"
 if runOnMC:
    jecLevelsAK4chs = [
-          'JEC/Fall17_17Nov2017_V32_MC_L1FastJet_AK4PFchs.txt',
-          'JEC/Fall17_17Nov2017_V32_MC_L2Relative_AK4PFchs.txt',
-          'JEC/Fall17_17Nov2017_V32_MC_L3Absolute_AK4PFchs.txt'
+          'Fall17_17Nov2017_V32_MC_L1FastJet_AK4PFchs.txt',
+          'Fall17_17Nov2017_V32_MC_L2Relative_AK4PFchs.txt',
+          'Fall17_17Nov2017_V32_MC_L3Absolute_AK4PFchs.txt'
     ]
    jecLevelsAK4puppi = [
-          'JEC/Fall17_17Nov2017_V32_MC_L1FastJet_AK4PFPuppi.txt',
-          'JEC/Fall17_17Nov2017_V32_MC_L2Relative_AK4PFPuppi.txt',
-          'JEC/Fall17_17Nov2017_V32_MC_L3Absolute_AK4PFPuppi.txt'
+          'Fall17_17Nov2017_V32_MC_L1FastJet_AK4PFPuppi.txt',
+          'Fall17_17Nov2017_V32_MC_L2Relative_AK4PFPuppi.txt',
+          'Fall17_17Nov2017_V32_MC_L3Absolute_AK4PFPuppi.txt'
     ]
 else:
    jecLevelsAK4chs = [
-          'JEC/Fall17_17Nov2017F_V32_DATA_L1FastJet_AK4PFchs.txt',
-          'JEC/Fall17_17Nov2017F_V32_DATA_L2Relative_AK4PFchs.txt',
-          'JEC/Fall17_17Nov2017F_V32_DATA_L3Absolute_AK4PFchs.txt',
-          'JEC/Fall17_17Nov2017F_V32_DATA_L2L3Residual_AK4PFchs.txt'
+          'Fall17_17Nov2017F_V32_DATA_L1FastJet_AK4PFchs.txt',
+          'Fall17_17Nov2017F_V32_DATA_L2Relative_AK4PFchs.txt',
+          'Fall17_17Nov2017F_V32_DATA_L3Absolute_AK4PFchs.txt',
+          'Fall17_17Nov2017F_V32_DATA_L2L3Residual_AK4PFchs.txt'
     ]
    jecLevelsAK4puppi = [
-          'JEC/Fall17_17Nov2017F_V32_DATA_L1FastJet_AK4PFPuppi.txt',
-          'JEC/Fall17_17Nov2017F_V32_DATA_L2Relative_AK4PFPuppi.txt',
-          'JEC/Fall17_17Nov2017F_V32_DATA_L3Absolute_AK4PFPuppi.txt',
-          'JEC/Fall17_17Nov2017F_V32_DATA_L2L3Residual_AK4PFPuppi.txt'
+          'Fall17_17Nov2017F_V32_DATA_L1FastJet_AK4PFPuppi.txt',
+          'Fall17_17Nov2017F_V32_DATA_L2Relative_AK4PFPuppi.txt',
+          'Fall17_17Nov2017F_V32_DATA_L3Absolute_AK4PFPuppi.txt',
+          'Fall17_17Nov2017F_V32_DATA_L2L3Residual_AK4PFPuppi.txt'
     ]
 
 
@@ -196,6 +196,30 @@ process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 #                                 )
 
 
+
+process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
+
+baddetEcallist = cms.vuint32(
+    [872439604,872422825,872420274,872423218,
+     872423215,872416066,872435036,872439336,
+     872420273,872436907,872420147,872439731,
+     872436657,872420397,872439732,872439339,
+     872439603,872422436,872439861,872437051,
+     872437052,872420649,872422436,872421950,
+     872437185,872422564,872421566,872421695,
+     872421955,872421567,872437184,872421951,
+     872421694,872437056,872437057,872437313])
+
+
+process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
+    "EcalBadCalibFilter",
+    EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
+    ecalMinEt        = cms.double(50.),
+    baddetEcal    = baddetEcallist,
+    taggingMode = cms.bool(True),
+    debug = cms.bool(False)
+    )
+
 process.treeDumper = cms.EDAnalyzer("PKUTreeMaker",
                                     originalNEvents = cms.int32(1),
                                     crossSectionPb = cms.double(1),
@@ -231,11 +255,11 @@ process.treeDumper = cms.EDAnalyzer("PKUTreeMaker",
 
                                     hltToken    = cms.InputTag("TriggerResults","","HLT"),
                                     elPaths1     = cms.vstring("HLT_Ele23_WPTight_Gsf_v*"),
-                                    elPaths2     = cms.vstring("HLT_Ele27_WPTight_Gsf_v*"),
+                                    elPaths2     = cms.vstring("HLT_Ele32 WPTight Gsf L1DoubleEG_v*"),
                                     muPaths1     = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"),
 #                                    muPaths2     = cms.vstring("HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"),
                                     muPaths2     = cms.vstring("HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"),
-                                    muPaths3     = cms.vstring("HLT_IsoMu27_v*","HLT_IsoTkMu27_v*"),
+                                    muPaths3     = cms.vstring("HLT_IsoMu27_v*"),
 				    				noiseFilter = cms.InputTag('TriggerResults','', hltFiltersProcessName),
 				    				noiseFilterSelection_HBHENoiseFilter = cms.string('Flag_HBHENoiseFilter'),
                                     noiseFilterSelection_HBHENoiseIsoFilter = cms.string("Flag_HBHENoiseIsoFilter"),
@@ -260,6 +284,7 @@ process.analysis = cms.Path(
                             process.leptonSequence +
                             process.jetSequence +
                             process.metfilterSequence + #*process.treeDumper)
+                            process.ecalBadCalibReducedMINIAODFilter*
                             process.prefiringweight*process.treeDumper)
 #                           process.photonSequence +
 #                            process.photonIDValueMapProducer*process.treeDumper

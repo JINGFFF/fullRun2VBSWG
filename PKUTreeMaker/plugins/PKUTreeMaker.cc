@@ -131,7 +131,8 @@ private:
     edm::EDGetTokenT< double > prefweightup_token;
     edm::EDGetTokenT< double > prefweightdown_token;
 
-
+    // ecalbad
+	edm::EDGetTokenT< bool >ecalBadCalibFilterUpdate_token;
     // Filter
     edm::EDGetTokenT<edm::TriggerResults> noiseFilterToken_;
     edm::Handle<edm::TriggerResults>      noiseFilterBits_;
@@ -292,7 +293,7 @@ private:
     double deltaeta_new_f, deltaeta_JEC_up_f, deltaeta_JEC_down_f, deltaeta_JER_up_f, deltaeta_JER_down_f;
     double Mjj_new_f, Mjj_JEC_up_f, Mjj_JEC_down_f, Mjj_JER_up_f, Mjj_JER_down_f;
     double zepp_new_f, zepp_JEC_up_f, zepp_JEC_down_f, zepp_JER_up_f, zepp_JER_down_f;
-
+    bool _passecalBadCalibFilterUpdate;
     void setDummyValues();
 
     /// Parameters to steer the treeDumper
@@ -430,6 +431,9 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     
     jetCorrLabel_ = jecAK4chsLabels_;
     offsetCorrLabel_.push_back(jetCorrLabel_[0]);
+
+	// ecalbad
+	ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
 
     // filter
     noiseFilterToken_                 = consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("noiseFilter"));
@@ -937,6 +941,8 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
    	outTree_->Branch("prefWeightUp" ,&_prefiringweightup,"prefWeightUp/D"  );
  	outTree_->Branch("prefWeightDown",&_prefiringweightdown,"prefWeightDown/D"  );
 
+	//ecalbad
+	outTree_->Branch("_passecalBadCalibFilterUpdate"   ,&_passecalBadCalibFilterUpdate,"_passecalBadCalibFilterUpdate/O"  );
 }
 
 //------------------------------------
@@ -1360,6 +1366,12 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     nevent = iEvent.eventAuxiliary().event();
     run    = iEvent.eventAuxiliary().run();
     ls     = iEvent.eventAuxiliary().luminosityBlock();
+
+	edm::Handle< bool > passecalBadCalibFilterUpdate ;
+    iEvent.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
+   _passecalBadCalibFilterUpdate =  (*passecalBadCalibFilterUpdate );
+
+
     /*
         edm::Handle<LHEEventProduct> lheEvtInfo;
         iEvent.getByToken(LheToken_, lheEvtInfo);
@@ -1442,50 +1454,10 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         if (HLT_Mu3 < mtemp3)
             HLT_Mu3 = mtemp3;
     }
-/*
-    edm::Handle<pat::METCollection> METs_;
-    iEvent.getByToken(metToken_, METs_);
-    //https://indico.cern.ch/event/557439/contributions/2246809/attachments/1344891/2027219/METValidationStudies.pdf
-    //https://hypernews.cern.ch/HyperNews/CMS/get/physTools/3361/1.html
-    //https://github.com/cms-sw/cmssw/blob/fdbcb59c16cafd2a9b56177064bc0b6b93cc51dc/DataFormats/PatCandidates/interface/MET.h#L151-L168
-    if (!METs_.isValid())
-        return;
-    const pat::MET* patmet              = &(METs_->front());
-    double          met                 = METs_->front().pt();
-    double          met_JetResUp        = patmet->shiftedPt(pat::MET::JetResUp,pat::MET::Type1Smear);
-
-    //double          met_JetResDownSmear = patmet->shiftedPt(pat::MET::JetResDownSmear);
-    double          met_JetEnUp         = patmet->shiftedPt(pat::MET::JetEnUp);
-    double          met_JetEnDown       = patmet->shiftedPt(pat::MET::JetEnDown);
-    if (RunOnMC_) {
-        genMET = METs_->front().genMET()->pt();
-    }
-    std::cout << "______________ MET ______________" << std::endl;
-    std::cout << met << "|" << METs_->front().phi() << "|" << genMET <<"|"<<METs_->front().uncorPt()<< "|" << met_JetResUp << "|" << "|" << met_JetResDown << "|" << "|" << met_JetEnUp << "|" << met_JetEnDown << std::endl;
-    std::cout << "______________ MET ______________" << std::endl;
-    MET_et=met;
-    MET_phi=METs_->front().phi();
-    //MET_sumEt=METs_->front().SumEt();
-    //MET_corrPx=METs_->front().Px();
-    //MET_corrPy=METs_->front().Py();
-    MET_et_new=met;
-    MET_et_JEC_up = met_JetEnUp;
-    MET_et_JEC_down = met_JetEnDown;
-    MET_et_JER_up = met_JetResUp;
-    MET_et_JER_down = met_JetResDown;
-    MET_phi_new=METs_->front().phi();
-    MET_phi_JEC_up=patmet->shiftedPhi(pat::MET::JetEnUp);
-    MET_phi_JEC_down=patmet->shiftedPhi(pat::MET::JetEnDown);
-    MET_phi_JER_up=patmet->shiftedPhi(pat::MET::JetResUp,pat::MET::Type1Smear);
-    MET_phi_JER_down=patmet->shiftedPhi(pat::MET::JetResDown,pat::MET::Type1Smear);
-    //MET_sumEt_new = METs_->front().SumEt();
-    MET_sumEt_JEC_up = patmet->shiftedSumEt(pat::MET::JetEnUp);
-    MET_sumEt_JEC_down = patmet->shiftedSumEt(pat::MET::JetEnDown);
-    MET_sumEt_JER_up = patmet->shiftedSumEt(pat::MET::JetResUp,pat::MET::Type1Smear);
-    MET_sumEt_JER_down = patmet->shiftedSumEt(pat::MET::JetResDown,pat::MET::Type1Smear);
-*/   
-   edm::Handle<edm::View<reco::Candidate> > leptonicVs;
-   iEvent.getByToken(leptonicVSrc_, leptonicVs);
+   
+	
+	edm::Handle<edm::View<reco::Candidate> > leptonicVs;
+    iEvent.getByToken(leptonicVSrc_, leptonicVs);
 
     if (leptonicVs->empty()) {
         outTree_->Fill();
@@ -1507,8 +1479,9 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     //    return;
     //}  //outTree_->Fill();
 
-   if (photons->empty()) {   hasphoton = 0.;  }
-   else {hasphoton =1.;}//outTree_->Fill();
+   
+	if (photons->empty()) {   hasphoton = 0.;  }
+    else {hasphoton =1.;}//outTree_->Fill();
 
     edm::Handle<edm::View<reco::GenParticle>> genParticles;  //define genParticle
     iEvent.getByToken(genSrc_, genParticles);
@@ -2079,7 +2052,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             ak4jet_eta[ik] = (*ak4jets)[ik].eta();
             ak4jet_phi[ik] = (*ak4jets)[ik].phi();
             ak4jet_e[ik]    = corr * uncorrJet.energy();
-            ak4jet_csv[ik]  = (*ak4jets)[ik].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+            ak4jet_csv[ik]  = (*ak4jets)[ik].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
             ak4jet_icsv[ik] = (*ak4jets)[ik].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         }
     }
@@ -2348,38 +2321,61 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             }
         }
     }
+  /*
 
-
-if(ak4jets->size()>=1){
+    if(ak4jets->size()>=1){
         jet1hf_orig=(*ak4jets)[0].hadronFlavour();
         jet1pf_orig=(*ak4jets)[0].partonFlavour();
-            jet1pt_orig=ak4jet_pt[0];
-            jet1eta_orig=ak4jet_eta[0];
-            jet1phi_orig=ak4jet_phi[0];
-            jet1e_orig=ak4jet_e[0];
-            jet1csv_orig =(*ak4jets)[0].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-            jet1icsv_orig =(*ak4jets)[0].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-            drj1a_orig=deltaR(jet1eta_orig,jet1phi_orig,photonsceta,photonscphi);
-            drj1l_orig=deltaR(jet1eta_orig,jet1phi_orig,etalep1,philep1);
+        jet1pt_orig=ak4jet_pt[0];
+        jet1eta_orig=ak4jet_eta[0];
+        jet1phi_orig=ak4jet_phi[0];
+        jet1e_orig=ak4jet_e[0];
+        jet1csv_orig =(*ak4jets)[0].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet1icsv_orig =(*ak4jets)[0].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+        drj1a_orig=deltaR(jet1eta_orig,jet1phi_orig,photonsceta,photonscphi);
+        drj1l_orig=deltaR(jet1eta_orig,jet1phi_orig,etalep1,philep1);
 
         if(ak4jets->size()>=2){
-
-        jet2hf_orig=(*ak4jets)[1].hadronFlavour();
-        jet2pf_orig=(*ak4jets)[1].partonFlavour();
+            jet2hf_orig=(*ak4jets)[1].hadronFlavour();
+            jet2pf_orig=(*ak4jets)[1].partonFlavour();
             jet2pt_orig=ak4jet_pt[1];
             jet2eta_orig=ak4jet_eta[1];
             jet2phi_orig=ak4jet_phi[1];
             jet2e_orig=ak4jet_e[1];
-            jet2csv_orig =(*ak4jets)[1].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+            jet2csv_orig =(*ak4jets)[1].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
             jet2icsv_orig =(*ak4jets)[1].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
             drj2a_orig=deltaR(jet2eta_orig,jet2phi_orig,photonsceta,photonscphi);
             drj2l_orig=deltaR(jet2eta_orig,jet2phi_orig,etalep1,philep1);
 
+        }
+    }
+*/
+    if(ak4jets->size()>=1){
+        jet1hf_orig=(*ak4jets)[0].hadronFlavour();
+        jet1pf_orig=(*ak4jets)[0].partonFlavour();
+        jet1pt_orig=ak4jet_pt[0];
+        jet1eta_orig=ak4jet_eta[0];
+        jet1phi_orig=ak4jet_phi[0];
+        jet1e_orig=ak4jet_e[0];
+        jet1csv_orig =(*ak4jets)[0].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet1icsv_orig =(*ak4jets)[0].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+        drj1a_orig=deltaR(jet1eta_orig,jet1phi_orig,photonsceta,photonscphi);
+        drj1l_orig=deltaR(jet1eta_orig,jet1phi_orig,etalep1,philep1);
+
+        if(ak4jets->size()>=2){
+            jet2hf_orig=(*ak4jets)[1].hadronFlavour();
+            jet2pf_orig=(*ak4jets)[1].partonFlavour();
+            jet2pt_orig=ak4jet_pt[1];
+            jet2eta_orig=ak4jet_eta[1];
+            jet2phi_orig=ak4jet_phi[1];
+            jet2e_orig=ak4jet_e[1];
+            jet2csv_orig =(*ak4jets)[1].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+            jet2icsv_orig =(*ak4jets)[1].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+            drj2a_orig=deltaR(jet2eta_orig,jet2phi_orig,photonsceta,photonscphi);
+            drj2l_orig=deltaR(jet2eta_orig,jet2phi_orig,etalep1,philep1);
 
         }
-
-
-}
+    }
 
 
     // variable concerning jet, old
@@ -2397,8 +2393,8 @@ if(ak4jets->size()>=1){
         jet2eta  = jets[jetindexphoton12[1]]->Eta();
         jet2phi  = jets[jetindexphoton12[1]]->Phi();
         jet2e    = jets[jetindexphoton12[1]]->E();
-        jet1csv  = (*ak4jets)[jetindexphoton12[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv  = (*ak4jets)[jetindexphoton12[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv  = (*ak4jets)[jetindexphoton12[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv  = (*ak4jets)[jetindexphoton12[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv = (*ak4jets)[jetindexphoton12[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv = (*ak4jets)[jetindexphoton12[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a    = deltaR(jet1eta, jet1phi, photonsceta, photonscphi);
@@ -2440,8 +2436,8 @@ if(ak4jets->size()>=1){
         jet2eta_new  = jets_new[jetindexphoton12_new[1]]->Eta();
         jet2phi_new  = jets_new[jetindexphoton12_new[1]]->Phi();
         jet2e_new    = jets_new[jetindexphoton12_new[1]]->E();
-        jet1csv_new  = (*ak4jets)[jetindexphoton12_new[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_new  = (*ak4jets)[jetindexphoton12_new[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_new  = (*ak4jets)[jetindexphoton12_new[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_new  = (*ak4jets)[jetindexphoton12_new[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_new = (*ak4jets)[jetindexphoton12_new[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_new = (*ak4jets)[jetindexphoton12_new[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_new    = deltaR(jet1eta_new, jet1phi_new, photoneta, photonphi);
@@ -2480,8 +2476,8 @@ if(ak4jets->size()>=1){
         jet2eta_JEC_up  = jets_JEC_up[jetindexphoton12_JEC_up[1]]->Eta();
         jet2phi_JEC_up  = jets_JEC_up[jetindexphoton12_JEC_up[1]]->Phi();
         jet2e_JEC_up    = jets_JEC_up[jetindexphoton12_JEC_up[1]]->E();
-        jet1csv_JEC_up  = (*ak4jets)[jetindexphoton12_JEC_up[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JEC_up  = (*ak4jets)[jetindexphoton12_JEC_up[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JEC_up  = (*ak4jets)[jetindexphoton12_JEC_up[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JEC_up  = (*ak4jets)[jetindexphoton12_JEC_up[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JEC_up = (*ak4jets)[jetindexphoton12_JEC_up[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JEC_up = (*ak4jets)[jetindexphoton12_JEC_up[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JEC_up    = deltaR(jet1eta_JEC_up, jet1phi_JEC_up, photoneta, photonphi);
@@ -2520,8 +2516,8 @@ if(ak4jets->size()>=1){
         jet2eta_JEC_down  = jets_JEC_down[jetindexphoton12_JEC_down[1]]->Eta();
         jet2phi_JEC_down  = jets_JEC_down[jetindexphoton12_JEC_down[1]]->Phi();
         jet2e_JEC_down    = jets_JEC_down[jetindexphoton12_JEC_down[1]]->E();
-        jet1csv_JEC_down  = (*ak4jets)[jetindexphoton12_JEC_down[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JEC_down  = (*ak4jets)[jetindexphoton12_JEC_down[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JEC_down  = (*ak4jets)[jetindexphoton12_JEC_down[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JEC_down  = (*ak4jets)[jetindexphoton12_JEC_down[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JEC_down = (*ak4jets)[jetindexphoton12_JEC_down[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JEC_down = (*ak4jets)[jetindexphoton12_JEC_down[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JEC_down    = deltaR(jet1eta_JEC_down, jet1phi_JEC_down, photoneta, photonphi);
@@ -2562,8 +2558,8 @@ if(ak4jets->size()>=1){
         jet2eta_JER_up  = jets_JER_up[jetindexphoton12_JER_up[1]]->Eta();
         jet2phi_JER_up  = jets_JER_up[jetindexphoton12_JER_up[1]]->Phi();
         jet2e_JER_up    = jets_JER_up[jetindexphoton12_JER_up[1]]->E();
-        jet1csv_JER_up  = (*ak4jets)[jetindexphoton12_JER_up[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JER_up  = (*ak4jets)[jetindexphoton12_JER_up[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JER_up  = (*ak4jets)[jetindexphoton12_JER_up[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JER_up  = (*ak4jets)[jetindexphoton12_JER_up[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JER_up = (*ak4jets)[jetindexphoton12_JER_up[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JER_up = (*ak4jets)[jetindexphoton12_JER_up[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JER_up    = deltaR(jet1eta_JER_up, jet1phi_JER_up, photoneta, photonphi);
@@ -2604,8 +2600,8 @@ if(ak4jets->size()>=1){
         jet2eta_JER_down  = jets_JER_down[jetindexphoton12_JER_down[1]]->Eta();
         jet2phi_JER_down  = jets_JER_down[jetindexphoton12_JER_down[1]]->Phi();
         jet2e_JER_down    = jets_JER_down[jetindexphoton12_JER_down[1]]->E();
-        jet1csv_JER_down  = (*ak4jets)[jetindexphoton12_JER_down[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JER_down  = (*ak4jets)[jetindexphoton12_JER_down[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JER_down  = (*ak4jets)[jetindexphoton12_JER_down[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JER_down  = (*ak4jets)[jetindexphoton12_JER_down[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JER_down = (*ak4jets)[jetindexphoton12_JER_down[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JER_down = (*ak4jets)[jetindexphoton12_JER_down[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JER_down    = deltaR(jet1eta_JER_down, jet1phi_JER_down, photoneta, photonphi);
@@ -2639,7 +2635,6 @@ if(ak4jets->size()>=1){
     }
 
 
-std::cout<<"begin process old jets _f !!!"<<std::endl;
 
     if (jetindexphoton12_f[0] > -1 && jetindexphoton12_f[1] > -1) {
 
@@ -2655,8 +2650,8 @@ std::cout<<"begin process old jets _f !!!"<<std::endl;
         jet2eta_f  = jets[jetindexphoton12_f[1]]->Eta();
         jet2phi_f  = jets[jetindexphoton12_f[1]]->Phi();
         jet2e_f    = jets[jetindexphoton12_f[1]]->E();
-        jet1csv_f  = (*ak4jets)[jetindexphoton12_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_f  = (*ak4jets)[jetindexphoton12_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_f  = (*ak4jets)[jetindexphoton12_f[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_f  = (*ak4jets)[jetindexphoton12_f[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_f = (*ak4jets)[jetindexphoton12_f[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_f = (*ak4jets)[jetindexphoton12_f[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_f    = deltaR(jet1eta_f, jet1phi_f, photonsceta_f, photonscphi_f);
@@ -2688,53 +2683,23 @@ std::cout<<"begin process old jets _f !!!"<<std::endl;
             Dphiwajj_f = 2.0 * Pi - Dphiwajj_f;
         }
     }
-/*
-std::cout<<"begin process old jets _f new !!!"<<std::endl;
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 
     if (jetindexphoton12_new_f[0] > -1 && jetindexphoton12_new_f[1] > -1) {
-
-std::cout<<"begin process old jets _f new array!!!"<<std::endl;
-
         jet1pt_new_f   = jets[jetindexphoton12_new_f[0]]->Pt();
-
-std::cout<<"begin process old jets _f new array2!!!"<<std::endl;
-
         jet1eta_new_f  = jets[jetindexphoton12_new_f[0]]->Eta();
-
-std::cout<<"begin process old jets _f new array3!!!"<<std::endl;
-
         jet1phi_new_f  = jets[jetindexphoton12_new_f[0]]->Phi();
-
-std::cout<<"begin process old jets _f new array4!!!"<<std::endl;
-
         jet1e_new_f    = jets[jetindexphoton12_new_f[0]]->E();
-
-std::cout<<"begin process old jets _f new array5!!!"<<std::endl;
-std::cout<<"jetindexphoton12_new_f[1]  "<<jetindexphoton12_new_f[1]<<std::endl;
-std::cout<<"  jets[jetindexphoton12_new_f[1]] pt  "<<jets[jetindexphoton12_new_f[1]]->Pt()<<std::endl;
         jet2pt_new_f   = jets[jetindexphoton12_new_f[1]]->Pt();
-
-std::cout<<"begin process old jets _f new array6!!!"<<std::endl;
-
         jet2eta_new_f  = jets[jetindexphoton12_new_f[1]]->Eta();
-
-std::cout<<"begin process old jets _f new array7!!!"<<std::endl;
-
         jet2phi_new_f  = jets[jetindexphoton12_new_f[1]]->Phi();
-
-std::cout<<"begin process old jets _f new array8!!!"<<std::endl;
-
         jet2e_new_f    = jets[jetindexphoton12_new_f[1]]->E();
-
-std::cout<<"begin process old jets _f new btag!!!"<<std::endl;
-
-        jet1csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_new_f = (*ak4jets)[jetindexphoton12_new_f[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_new_f = (*ak4jets)[jetindexphoton12_new_f[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-
-std::cout<<"begin process old jets _f new dr"<<std::endl;
-
         drj1a_new_f    = deltaR(jet1eta_new_f, jet1phi_new_f, photoneta_f, photonphi_f);
         drj2a_new_f    = deltaR(jet2eta_new_f, jet2phi_new_f, photoneta_f, photonphi_f);
         drj1l_new_f    = deltaR(jet1eta_new_f, jet1phi_new_f, etalep1, philep1);
@@ -2751,8 +2716,6 @@ std::cout<<"begin process old jets _f new dr"<<std::endl;
         TLorentzVector vp4_f;
         vp4_f.SetPtEtaPhiE(leptonicV.pt(), leptonicV.eta(), leptonicV.phi(), leptonicV.energy());
 
-std::cout<<"begin process old jets _f new phijmet!!!"<<std::endl;
-
         j1metPhi_new_f = fabs(jet1phi_new_f - MET_phi_new);
         if (j1metPhi_new_f > Pi) {
             j1metPhi_new_f = 2.0 * Pi - j1metPhi_new_f;
@@ -2762,14 +2725,10 @@ std::cout<<"begin process old jets _f new phijmet!!!"<<std::endl;
             j2metPhi_new_f = 2.0 * Pi - j2metPhi_new_f;
         }
         Mjj_new_f      = (j1p4_f + j2p4_f).M();
-
-std::cout<<"begin process old jets _f new deltaeta!!!"<<std::endl;
-
         deltaeta_new_f = fabs(jet1eta_new_f - jet2eta_new_f);
         zepp_new_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
-std::cout<<"begin process old jets _f jec up!!!"<<std::endl;
 
     if (jetindexphoton12_JEC_up_f[0] > -1 && jetindexphoton12_JEC_up_f[1] > -1) {
         jet1pt_JEC_up_f   = jets[jetindexphoton12_JEC_up_f[0]]->Pt();
@@ -2780,8 +2739,8 @@ std::cout<<"begin process old jets _f jec up!!!"<<std::endl;
         jet2eta_JEC_up_f  = jets[jetindexphoton12_JEC_up_f[1]]->Eta();
         jet2phi_JEC_up_f  = jets[jetindexphoton12_JEC_up_f[1]]->Phi();
         jet2e_JEC_up_f    = jets[jetindexphoton12_JEC_up_f[1]]->E();
-        jet1csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JEC_up_f = (*ak4jets)[jetindexphoton12_JEC_up_f[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JEC_up_f = (*ak4jets)[jetindexphoton12_JEC_up_f[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JEC_up_f    = deltaR(jet1eta_JEC_up_f, jet1phi_JEC_up_f, photoneta_f, photonphi_f);
@@ -2811,7 +2770,6 @@ std::cout<<"begin process old jets _f jec up!!!"<<std::endl;
         zepp_JEC_up_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
-std::cout<<"begin process old jets _f jec down!!!"<<std::endl;
 
     if (jetindexphoton12_JEC_down_f[0] > -1 && jetindexphoton12_JEC_down_f[1] > -1) {
         jet1pt_JEC_down_f   = jets[jetindexphoton12_JEC_down_f[0]]->Pt();
@@ -2822,8 +2780,8 @@ std::cout<<"begin process old jets _f jec down!!!"<<std::endl;
         jet2eta_JEC_down_f  = jets[jetindexphoton12_JEC_down_f[1]]->Eta();
         jet2phi_JEC_down_f  = jets[jetindexphoton12_JEC_down_f[1]]->Phi();
         jet2e_JEC_down_f    = jets[jetindexphoton12_JEC_down_f[1]]->E();
-        jet1csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JEC_down_f = (*ak4jets)[jetindexphoton12_JEC_down_f[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JEC_down_f = (*ak4jets)[jetindexphoton12_JEC_down_f[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JEC_down_f    = deltaR(jet1eta_JEC_down_f, jet1phi_JEC_down_f, photoneta_f, photonphi_f);
@@ -2853,8 +2811,6 @@ std::cout<<"begin process old jets _f jec down!!!"<<std::endl;
         zepp_JEC_down_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
-std::cout<<"begin process old jets _f jer up!!!"<<std::endl;
-
     if (jetindexphoton12_JER_up_f[0] > -1 && jetindexphoton12_JER_up_f[1] > -1) {
         jet1pt_JER_up_f   = jets[jetindexphoton12_JER_up_f[0]]->Pt();
         jet1eta_JER_up_f  = jets[jetindexphoton12_JER_up_f[0]]->Eta();
@@ -2864,8 +2820,8 @@ std::cout<<"begin process old jets _f jer up!!!"<<std::endl;
         jet2eta_JER_up_f  = jets[jetindexphoton12_JER_up_f[1]]->Eta();
         jet2phi_JER_up_f  = jets[jetindexphoton12_JER_up_f[1]]->Phi();
         jet2e_JER_up_f    = jets[jetindexphoton12_JER_up_f[1]]->E();
-        jet1csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JER_up_f = (*ak4jets)[jetindexphoton12_JER_up_f[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JER_up_f = (*ak4jets)[jetindexphoton12_JER_up_f[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JER_up_f    = deltaR(jet1eta_JER_up_f, jet1phi_JER_up_f, photoneta_f, photonphi_f);
@@ -2895,7 +2851,6 @@ std::cout<<"begin process old jets _f jer up!!!"<<std::endl;
         zepp_JER_up_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
-std::cout<<"begin process old jets _f jer down!!!"<<std::endl;
 
     if (jetindexphoton12_JER_down_f[0] > -1 && jetindexphoton12_JER_down_f[1] > -1) {
         jet1pt_JER_down_f   = jets[jetindexphoton12_JER_down_f[0]]->Pt();
@@ -2906,8 +2861,8 @@ std::cout<<"begin process old jets _f jer down!!!"<<std::endl;
         jet2eta_JER_down_f  = jets[jetindexphoton12_JER_down_f[1]]->Eta();
         jet2phi_JER_down_f  = jets[jetindexphoton12_JER_down_f[1]]->Phi();
         jet2e_JER_down_f    = jets[jetindexphoton12_JER_down_f[1]]->E();
-        jet1csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        jet2csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+        jet1csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+        jet2csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_JER_down_f = (*ak4jets)[jetindexphoton12_JER_down_f[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_JER_down_f = (*ak4jets)[jetindexphoton12_JER_down_f[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         drj1a_JER_down_f    = deltaR(jet1eta_JER_down_f, jet1phi_JER_down_f, photoneta_f, photonphi_f);
@@ -2936,7 +2891,8 @@ std::cout<<"begin process old jets _f jer down!!!"<<std::endl;
         deltaeta_JER_down_f = fabs(jet1eta_JER_down_f - jet2eta_JER_down_f);
         zepp_JER_down_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
-*/
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     outTree_->Fill();
     delete jecAK4_;
@@ -3151,6 +3107,8 @@ void PKUTreeMaker::setDummyValues() {
     photonhaspixelseed_f = false;
     photonpasseleveto    = false;
     photonpasseleveto_f  = false;
+
+	_passecalBadCalibFilterUpdate = false;
 
     ISRPho              = false;
     dR_                 = 999;

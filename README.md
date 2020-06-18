@@ -1,15 +1,12 @@
-cmsrel CMSSW_10_2_18
-
-cd CMSSW_10_2_18/src
-
+cmsrel CMSSW_9_4_9_cand2
+cd CMSSW_9_4_9_cand2/src
 cmsenv
-
 git cms-init
 
-git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
+git cms-merge-topic cms-egamma:EgammaID_949
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_940
 
-git-cms-addpkg RecoEgamma/PhotonIdentification
+cd $CMSSW_BASE/src
 
-git cms-addpkg RecoMET/METFilters
-
+git cms-merge-topic cms-met:METFixEE2017_949_v2
 git clone -b 17 https://github.com/JINGFFF/fullRun2VBSWG.git
