@@ -132,7 +132,8 @@ private:
     edm::EDGetTokenT< double > prefweightdown_token;
 
     // ecalbad
-	edm::EDGetTokenT< bool >ecalBadCalibFilterUpdate_token;
+    edm::EDGetTokenT< bool >ecalBadCalibFilterUpdate_token;
+
     // Filter
     edm::EDGetTokenT<edm::TriggerResults> noiseFilterToken_;
     edm::Handle<edm::TriggerResults>      noiseFilterBits_;
@@ -432,8 +433,9 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     jetCorrLabel_ = jecAK4chsLabels_;
     offsetCorrLabel_.push_back(jetCorrLabel_[0]);
 
-	// ecalbad
-	ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
+    // ecalbad
+    ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
+
 
     // filter
     noiseFilterToken_                 = consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("noiseFilter"));
@@ -940,9 +942,9 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
   	outTree_->Branch("prefWeight"   ,&_prefiringweight,"prefWeight/D"  );
    	outTree_->Branch("prefWeightUp" ,&_prefiringweightup,"prefWeightUp/D"  );
  	outTree_->Branch("prefWeightDown",&_prefiringweightdown,"prefWeightDown/D"  );
+    //ecalbad
+    outTree_->Branch("_passecalBadCalibFilterUpdate"   ,&_passecalBadCalibFilterUpdate,"_passecalBadCalibFilterUpdate/O"  );
 
-	//ecalbad
-	outTree_->Branch("_passecalBadCalibFilterUpdate"   ,&_passecalBadCalibFilterUpdate,"_passecalBadCalibFilterUpdate/O"  );
 }
 
 //------------------------------------
@@ -1367,12 +1369,12 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     run    = iEvent.eventAuxiliary().run();
     ls     = iEvent.eventAuxiliary().luminosityBlock();
 
-	edm::Handle< bool > passecalBadCalibFilterUpdate ;
+    // ecalbad
+    edm::Handle< bool > passecalBadCalibFilterUpdate ;
     iEvent.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
    _passecalBadCalibFilterUpdate =  (*passecalBadCalibFilterUpdate );
 
-
-    /*
+	/*
         edm::Handle<LHEEventProduct> lheEvtInfo;
         iEvent.getByToken(LheToken_, lheEvtInfo);
 
@@ -1454,10 +1456,9 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         if (HLT_Mu3 < mtemp3)
             HLT_Mu3 = mtemp3;
     }
-   
-	
-	edm::Handle<edm::View<reco::Candidate> > leptonicVs;
-    iEvent.getByToken(leptonicVSrc_, leptonicVs);
+
+   edm::Handle<edm::View<reco::Candidate> > leptonicVs;
+   iEvent.getByToken(leptonicVSrc_, leptonicVs);
 
     if (leptonicVs->empty()) {
         outTree_->Fill();
@@ -1474,14 +1475,9 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     edm::Handle<edm::View<pat::Photon>> photons;
     iEvent.getByToken(photonSrc_, photons);
 
-    //if (photons->empty()) {
-    //    outTree_->Fill();
-    //    return;
-    //}  //outTree_->Fill();
 
-   
-	if (photons->empty()) {   hasphoton = 0.;  }
-    else {hasphoton =1.;}//outTree_->Fill();
+   if (photons->empty()) {   hasphoton = 0.;  }
+   else {hasphoton =1.;}//outTree_->Fill();
 
     edm::Handle<edm::View<reco::GenParticle>> genParticles;  //define genParticle
     iEvent.getByToken(genSrc_, genParticles);
@@ -1603,10 +1599,6 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		addTypeICorr(iEvent);
 		addTypeICorr_user(iEvent);
 		for (const pat::MET &met : *METs_) {
-			//         const float  rawPt    = met.shiftedPt(pat::MET::METUncertainty::NoShift, pat::MET::METUncertaintyLevel::Raw);
-			//         const float  rawPhi   = met.shiftedPhi(pat::MET::METUncertainty::NoShift, pat::MET::METUncertaintyLevel::Raw);
-			//         const float  rawSumEt = met.shiftedSumEt(pat::MET::METUncertainty::NoShift, pat::MET::METUncertaintyLevel::Raw);
-
 
 			const float rawPt = met.uncorPt();
 			const float rawPhi = met.uncorPhi();
@@ -1846,11 +1838,8 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
          double phIso1 = (*photons)[ip].userFloat("phoPhotonIsolation");
         
             double chiso=std::max(0.0, chIso1 - rhoVal_*EAch(fabs((*photons)[ip].eta()))); //effAreaChHadrons_.getEffectiveArea(fabs(phosc_eta)));
-//            double chiso=std::max((*photons)[ip].chargedHadronIso()-rhoVal_*EAch(fabs((*photons)[ip].eta())),0.0);
             double nhiso=std::max(0.0, nhIso1 - rhoVal_*EAnh(fabs((*photons)[ip].eta()))); //effAreaNeuHadrons_.getEffectiveArea(fabs(phosc_eta)));
-//            double nhiso=std::max((*photons)[ip].neutralHadronIso()-rhoVal_*EAnh(fabs((*photons)[ip].eta())),0.0);
             double phoiso=std::max(0.0, phIso1 - rhoVal_*EApho(fabs((*photons)[ip].eta()))); //effAreaPhotons_.getEffectiveArea(fabs(phosc_eta)));
-//            double phoiso=std::max((*photons)[ip].photonIso()-rhoVal_*EApho(fabs((*photons)[ip].eta())),0.0);
 
 
         int                                   ismedium_photon   = 0;
@@ -1896,11 +1885,40 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             photon_mva[ip] = (tp4 + fwp4).M();
         }
 
-        //if (fabs(phosc_eta) < 1.4442 && (*photons)[ip].hadTowOverEm() < 0.0396 && photon_sieie[ip] < 0.01022 && chiso < 0.441 && nhiso < (2.725 + (0.0148 * (*photons)[ip].pt() + 0.000017 * (*photons)[ip].pt() * (*photons)[ip].pt())) && phoiso < (2.571 + 0.0047 * (*photons)[ip].pt())) {ismedium_photon = 1;}
-        //if (fabs(phosc_eta) > 1.566 && fabs(phosc_eta) < 2.5 && (*photons)[ip].hadTowOverEm() < 0.0219 && photon_sieie[ip] < 0.03001 && chiso < 0.442 && nhiso < (1.715 + (0.0163 * (*photons)[ip].pt() + 0.000014 * (*photons)[ip].pt() * (*photons)[ip].pt())) && phoiso < (3.863 + 0.0034 * (*photons)[ip].pt())) {ismedium_photon = 1;}
+		//photon ID
+		//--------medium photon ID--------------
+		bool barrel_medium_hoe		= (*photons)[ip].hadTowOverEm() < 0.02197;
+		bool barrel_medium_sieie 	= photon_sieie[ip] < 0.01015;
+		bool barrel_medium_chiso 	= chiso < 1.141;
+		bool barrel_medium_nhiso 	= nhiso < (1.189 + (0.01512 * (*photons)[ip].pt() + 0.00002259 * (*photons)[ip].pt() * (*photons)[ip].pt()));
+		bool barrel_medium_phoiso 	= phoiso < (2.08 + 0.004017 * (*photons)[ip].pt());
 
-        if (fabs(phosc_eta) < 1.4442 && (*photons)[ip].hadTowOverEm() < 0.02197 && photon_sieie[ip] < 0.01015 && chiso < 1.141 && nhiso < (1.189 + (0.01512 * (*photons)[ip].pt() + 0.00002259 * (*photons)[ip].pt() * (*photons)[ip].pt())) && phoiso < (2.08 + 0.004017 * (*photons)[ip].pt())) {ismedium_photon = 1;}
-        if (fabs(phosc_eta) > 1.566 && fabs(phosc_eta) < 2.5 && (*photons)[ip].hadTowOverEm() < 0.0326 && photon_sieie[ip] < 0.0272 && chiso < 1.051 && nhiso < (2.718 + (0.0117 * (*photons)[ip].pt() + 0.000023 * (*photons)[ip].pt() * (*photons)[ip].pt())) && phoiso < (3.867 + 0.0037 * (*photons)[ip].pt())) {ismedium_photon = 1;}
+        bool endcap_medium_hoe      = (*photons)[ip].hadTowOverEm() < 0.0326;
+        bool endcap_medium_sieie    = photon_sieie[ip] < 0.0272;
+        bool endcap_medium_chiso    = chiso < 1.051;
+        bool endcap_medium_nhiso    = nhiso < (2.718 + (0.0117 * (*photons)[ip].pt() + 0.000023 * (*photons)[ip].pt() * (*photons)[ip].pt()));
+        bool endcap_medium_phoiso   = phoiso < (3.867 + 0.0037 * (*photons)[ip].pt());
+
+		//--------loose photon ID---------------
+        bool barrel_loose_hoe		= (*photons)[ip].hadTowOverEm() < 0.04596;
+        bool barrel_loose_sieie		= photon_sieie[ip] < 0.0106;
+        bool barrel_loose_chiso		= chiso < 1.694;
+        bool barrel_loose_nhiso		= nhiso < (24.032 + (0.01512 * (*photons)[ip].pt() + 0.00002259 * (*photons)[ip].pt() * (*photons)[ip].pt()));
+        bool barrel_loose_phoiso	= phoiso < (2.876 + 0.004017 * (*photons)[ip].pt());
+
+        bool endcap_loose_hoe      	= (*photons)[ip].hadTowOverEm() < 0.0590;
+        bool endcap_loose_sieie    	= photon_sieie[ip] < 0.0272;
+        bool endcap_loose_chiso    	= chiso < 2.089;
+        bool endcap_loose_nhiso    	= nhiso < (19.722 + (0.0117 * (*photons)[ip].pt() + 0.000023 * (*photons)[ip].pt() * (*photons)[ip].pt()));
+        bool endcap_loose_phoiso   	= phoiso < (4.162 + 0.0037 * (*photons)[ip].pt());
+
+		//define medium photon as real photon
+        if (fabs(phosc_eta) < 1.4442 && barrel_medium_hoe && barrel_medium_sieie && barrel_medium_chiso && barrel_medium_nhiso && barrel_medium_phoiso) {
+			ismedium_photon = 1;
+		}
+        if (fabs(phosc_eta) > 1.566 && fabs(phosc_eta) < 2.5 && endcap_medium_hoe && endcap_medium_sieie && endcap_medium_chiso && endcap_medium_nhiso && endcap_medium_phoiso) {
+			ismedium_photon = 1;
+		}
 
 
         if (ismedium_photon == 1 && deltaR(phosc_eta, phosc_phi, etalep1, philep1) > 0.5) {
@@ -1915,25 +1933,24 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             }
         }
         //////////////////////////////////for fake photon study, store photon without sieie cut
-        //Inverting loose ID
-        //            if(passEleVetonew && (*photons)[ip].isEB() && (*photons)[ip].hadTowOverEm()<5*0.0597 && chiso<10 && nhiso<std::min(0.2*(*photons)[ip].pt(), 5.*(10.910 + (0.0148*(*photons)[ip].pt()+0.000017*(*photons)[ip].pt()*(*photons)[ip].pt())))  && phoiso<std::min(0.2*(*photons)[ip].pt(), 5.*(3.630+0.0047*(*photons)[ip].pt())) && !(photon_sieie[ip]<0.01031 && chiso<4)) {ismedium_photon_f=1;}  // && nhiso<(10.910 + (0.0148*(*photons)[ip].pt()+0.000017*(*photons)[ip].pt()*(*photons)[ip].pt())) && phoiso<(3.630+0.0047*(*photons)[ip].pt())
-        //            if(passEleVetonew && (*photons)[ip].isEE() && (*photons)[ip].hadTowOverEm()<5*0.0481 && chiso<10 && nhiso<std::min(0.2*(*photons)[ip].pt(), 5.*(5.931 + (0.0163*(*photons)[ip].pt()+0.000014*(*photons)[ip].pt()*(*photons)[ip].pt())))  && phoiso<std::min(0.2*(*photons)[ip].pt(), 5.*(6.641+0.0034*(*photons)[ip].pt())) && !(photon_sieie[ip]<0.03013 && chiso<4)) {ismedium_photon_f=1;}  // && nhiso<(5.931 + (0.0163*(*photons)[ip].pt()+0.000014*(*photons)[ip].pt()*(*photons)[ip].pt())) && phoiso<(6.641+0.0034*(*photons)[ip].pt())
+		bool barrel_inv_hoe 	= (!barrel_loose_hoe) && barrel_medium_sieie   && barrel_medium_chiso   && barrel_medium_nhiso   && barrel_medium_phoiso;
+		bool barrel_inv_chiso 	= barrel_medium_hoe   && barrel_medium_sieie   && (!barrel_loose_chiso) && barrel_medium_nhiso   && barrel_medium_phoiso;
+		bool barrel_inv_nhiso 	= barrel_medium_hoe   && barrel_medium_sieie   && barrel_medium_chiso   && (!barrel_loose_nhiso) && barrel_medium_phoiso;
+		bool barrel_inv_phoiso 	= barrel_medium_hoe   && barrel_medium_sieie   && barrel_medium_chiso   && barrel_medium_nhiso   && (!barrel_loose_phoiso);
+		bool barrel_inv_sieie 	= barrel_medium_hoe   && (!barrel_loose_sieie) && barrel_medium_chiso   && barrel_medium_nhiso   && barrel_medium_phoiso;
 
-        //            if(passEleVetonew && phosc_eta<1.4442 && (*photons)[ip].hadTowOverEm()<0.0597 && chiso<10 && nhiso<std::min(0.2*(*photons)[ip].pt(), (10.910 + (0.0148*(*photons)[ip].pt()+0.000017*(*photons)[ip].pt()*(*photons)[ip].pt())))  && phoiso<std::min(0.2*(*photons)[ip].pt(), (3.630+0.0047*(*photons)[ip].pt())) && !(photon_sieie[ip]<0.01031 && chiso<4)) {ismedium_photon_f=1;}
-        //            if(passEleVetonew && phosc_eta>1.566 && phosc_eta<2.5 && (*photons)[ip].hadTowOverEm()<0.0481 && chiso<10 && nhiso<std::min(0.2*(*photons)[ip].pt(), (5.931 + (0.0163*(*photons)[ip].pt()+0.000014*(*photons)[ip].pt()*(*photons)[ip].pt())))  && phoiso<std::min(0.2*(*photons)[ip].pt(), (6.641+0.0034*(*photons)[ip].pt())) && !(photon_sieie[ip]<0.03013 && chiso<4)) {ismedium_photon_f=1;}
+		bool endcap_inv_hoe 	= (!endcap_loose_hoe) && endcap_medium_sieie   && endcap_medium_chiso   && endcap_medium_nhiso   && endcap_medium_phoiso;
+		bool endcap_inv_chiso 	= endcap_medium_hoe   && endcap_medium_sieie   && (!endcap_loose_chiso) && endcap_medium_nhiso   && endcap_medium_phoiso;
+		bool endcap_inv_nhiso 	= endcap_medium_hoe   && endcap_medium_sieie   && endcap_medium_chiso   && (!endcap_loose_nhiso) && endcap_medium_phoiso;
+		bool endcap_inv_phoiso 	= endcap_medium_hoe   && endcap_medium_sieie   && endcap_medium_chiso   && endcap_medium_nhiso   && (!endcap_loose_phoiso);
+		bool endcap_inv_sieie 	= endcap_medium_hoe   && (!endcap_loose_sieie) && endcap_medium_chiso   && endcap_medium_nhiso   && endcap_medium_phoiso;
 
-        //            if(passEleVetonew && phosc_eta<1.4442 && (*photons)[ip].hadTowOverEm()<0.0396 && chiso<10 && nhiso<(2.725 + (0.0148*(*photons)[ip].pt()+0.000017*(*photons)[ip].pt()*(*photons)[ip].pt()))  && phoiso<(2.571+0.0047*(*photons)[ip].pt()) && !(photon_sieie[ip]<0.01022 && chiso<4)) {ismedium_photon_f=1;}
-        //            if(passEleVetonew && phosc_eta>1.566 && phosc_eta<2.5 && (*photons)[ip].hadTowOverEm()<0.0219 && chiso<10 && nhiso<(1.715 + (0.0163*(*photons)[ip].pt()+0.000014*(*photons)[ip].pt()*(*photons)[ip].pt()))  && phoiso<(3.863+0.0034*(*photons)[ip].pt()) && !(photon_sieie[ip]<0.03001 && chiso<4)) {ismedium_photon_f=1;}
-
-        if (fabs(phosc_eta) < 1.4442 && !((*photons)[ip].hadTowOverEm() < 0.02197 && photon_sieie[ip] < 0.01015 && chiso < 1.141 && nhiso < (1.189 + (0.01512 * (*photons)[ip].pt() + 0.00002259 * (*photons)[ip].pt() * (*photons)[ip].pt())) && phoiso < (2.08 + 0.004017 * (*photons)[ip].pt()))) {
-            ismedium_photon_f = 1;
-        }
-        if (fabs(phosc_eta) > 1.566 && fabs(phosc_eta) < 2.5 && !((*photons)[ip].hadTowOverEm() < 0.0326 && photon_sieie[ip] < 0.0272 && chiso < 1.051 && nhiso < (2.718 + (0.0117 * (*photons)[ip].pt() + 0.000023 * (*photons)[ip].pt() * (*photons)[ip].pt())) && phoiso < (3.867 + 0.0037 * (*photons)[ip].pt()))) {
-            ismedium_photon_f = 1;
-        }
-
-        //            if(phosc_eta<1.4442 && (*photons)[ip].hadTowOverEm()<0.0597 && chiso<15 && (nhiso<std::min(0.2*(*photons)[ip].pt(), 5.*(10.910 + (0.0148*(*photons)[ip].pt()+0.000017*(*photons)[ip].pt()*(*photons)[ip].pt())))  || phoiso<std::min(0.2*(*photons)[ip].pt(), 5.*(3.630+0.0047*(*photons)[ip].pt())) || !(photon_sieie[ip]<0.01031 && chiso<4))) {ismedium_photon_f=1;} // && nhiso<(10.910 + (0.0148*(*photons)[ip].pt()+0.000017*(*photons)[ip].pt()*(*photons)[ip].pt())) && phoiso<(3.630+0.0047*(*photons)[ip].pt())
-        //            if(phosc_eta>1.566 && phosc_eta<2.5  && (*photons)[ip].hadTowOverEm()<0.0481 && chiso<15 && (nhiso<std::min(0.2*(*photons)[ip].pt(), 5.*(5.931 + (0.0163*(*photons)[ip].pt()+0.000014*(*photons)[ip].pt()*(*photons)[ip].pt())))  || phoiso<std::min(0.2*(*photons)[ip].pt(), 5.*(6.641+0.0034*(*photons)[ip].pt())) || !(photon_sieie[ip]<0.03013 && chiso<4))) {ismedium_photon_f=1;}  // && nhiso<(5.931 + (0.0163*(*photons)[ip].pt()+0.000014*(*photons)[ip].pt()*(*photons)[ip].pt())) && phoiso<(6.641+0.0034*(*photons)[ip].pt())
+		if(fabs(phosc_eta)<1.4442 && (barrel_inv_hoe || barrel_inv_chiso || barrel_inv_nhiso || barrel_inv_phoiso || barrel_inv_sieie)){
+			ismedium_photon_f=1;
+		}
+		if(fabs(phosc_eta)>1.566 && fabs(phosc_eta)<2.5  && (endcap_inv_hoe || endcap_inv_chiso || endcap_inv_nhiso || endcap_inv_phoiso || endcap_inv_sieie)){
+			ismedium_photon_f=1;
+		}
 
         if (ismedium_photon_f == 1 && deltaR(phosc_eta, phosc_phi, etalep1, philep1) > 0.5) {
             if (cachecount2 == 0) {
@@ -2321,23 +2338,24 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             }
         }
     }
-  /*
 
-    if(ak4jets->size()>=1){
+
+if(ak4jets->size()>=1){
         jet1hf_orig=(*ak4jets)[0].hadronFlavour();
         jet1pf_orig=(*ak4jets)[0].partonFlavour();
-        jet1pt_orig=ak4jet_pt[0];
-        jet1eta_orig=ak4jet_eta[0];
-        jet1phi_orig=ak4jet_phi[0];
-        jet1e_orig=ak4jet_e[0];
-        jet1csv_orig =(*ak4jets)[0].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
-        jet1icsv_orig =(*ak4jets)[0].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-        drj1a_orig=deltaR(jet1eta_orig,jet1phi_orig,photonsceta,photonscphi);
-        drj1l_orig=deltaR(jet1eta_orig,jet1phi_orig,etalep1,philep1);
+            jet1pt_orig=ak4jet_pt[0];
+            jet1eta_orig=ak4jet_eta[0];
+            jet1phi_orig=ak4jet_phi[0];
+            jet1e_orig=ak4jet_e[0];
+            jet1csv_orig =(*ak4jets)[0].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
+            jet1icsv_orig =(*ak4jets)[0].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+            drj1a_orig=deltaR(jet1eta_orig,jet1phi_orig,photonsceta,photonscphi);
+            drj1l_orig=deltaR(jet1eta_orig,jet1phi_orig,etalep1,philep1);
 
         if(ak4jets->size()>=2){
-            jet2hf_orig=(*ak4jets)[1].hadronFlavour();
-            jet2pf_orig=(*ak4jets)[1].partonFlavour();
+
+        jet2hf_orig=(*ak4jets)[1].hadronFlavour();
+        jet2pf_orig=(*ak4jets)[1].partonFlavour();
             jet2pt_orig=ak4jet_pt[1];
             jet2eta_orig=ak4jet_eta[1];
             jet2phi_orig=ak4jet_phi[1];
@@ -2347,35 +2365,11 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             drj2a_orig=deltaR(jet2eta_orig,jet2phi_orig,photonsceta,photonscphi);
             drj2l_orig=deltaR(jet2eta_orig,jet2phi_orig,etalep1,philep1);
 
-        }
-    }
-*/
-    if(ak4jets->size()>=1){
-        jet1hf_orig=(*ak4jets)[0].hadronFlavour();
-        jet1pf_orig=(*ak4jets)[0].partonFlavour();
-        jet1pt_orig=ak4jet_pt[0];
-        jet1eta_orig=ak4jet_eta[0];
-        jet1phi_orig=ak4jet_phi[0];
-        jet1e_orig=ak4jet_e[0];
-        jet1csv_orig =(*ak4jets)[0].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
-        jet1icsv_orig =(*ak4jets)[0].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-        drj1a_orig=deltaR(jet1eta_orig,jet1phi_orig,photonsceta,photonscphi);
-        drj1l_orig=deltaR(jet1eta_orig,jet1phi_orig,etalep1,philep1);
-
-        if(ak4jets->size()>=2){
-            jet2hf_orig=(*ak4jets)[1].hadronFlavour();
-            jet2pf_orig=(*ak4jets)[1].partonFlavour();
-            jet2pt_orig=ak4jet_pt[1];
-            jet2eta_orig=ak4jet_eta[1];
-            jet2phi_orig=ak4jet_phi[1];
-            jet2e_orig=ak4jet_e[1];
-            jet2csv_orig =(*ak4jets)[1].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
-            jet2icsv_orig =(*ak4jets)[1].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-            drj2a_orig=deltaR(jet2eta_orig,jet2phi_orig,photonsceta,photonscphi);
-            drj2l_orig=deltaR(jet2eta_orig,jet2phi_orig,etalep1,philep1);
 
         }
-    }
+
+
+}
 
 
     // variable concerning jet, old
@@ -2635,6 +2629,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
 
 
+std::cout<<"begin process old jets _f !!!"<<std::endl;
 
     if (jetindexphoton12_f[0] > -1 && jetindexphoton12_f[1] > -1) {
 
@@ -2683,23 +2678,40 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             Dphiwajj_f = 2.0 * Pi - Dphiwajj_f;
         }
     }
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+/*
+std::cout<<"begin process old jets _f new !!!"<<std::endl;
 
     if (jetindexphoton12_new_f[0] > -1 && jetindexphoton12_new_f[1] > -1) {
+
+
         jet1pt_new_f   = jets[jetindexphoton12_new_f[0]]->Pt();
+
+
         jet1eta_new_f  = jets[jetindexphoton12_new_f[0]]->Eta();
+
+
         jet1phi_new_f  = jets[jetindexphoton12_new_f[0]]->Phi();
+
+
         jet1e_new_f    = jets[jetindexphoton12_new_f[0]]->E();
+
         jet2pt_new_f   = jets[jetindexphoton12_new_f[1]]->Pt();
+
+
         jet2eta_new_f  = jets[jetindexphoton12_new_f[1]]->Eta();
+
+
         jet2phi_new_f  = jets[jetindexphoton12_new_f[1]]->Phi();
+
+
         jet2e_new_f    = jets[jetindexphoton12_new_f[1]]->E();
+
+
         jet1csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[0]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet2csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[1]].bDiscriminator("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb");
         jet1icsv_new_f = (*ak4jets)[jetindexphoton12_new_f[0]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
         jet2icsv_new_f = (*ak4jets)[jetindexphoton12_new_f[1]].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+
         drj1a_new_f    = deltaR(jet1eta_new_f, jet1phi_new_f, photoneta_f, photonphi_f);
         drj2a_new_f    = deltaR(jet2eta_new_f, jet2phi_new_f, photoneta_f, photonphi_f);
         drj1l_new_f    = deltaR(jet1eta_new_f, jet1phi_new_f, etalep1, philep1);
@@ -2716,6 +2728,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         TLorentzVector vp4_f;
         vp4_f.SetPtEtaPhiE(leptonicV.pt(), leptonicV.eta(), leptonicV.phi(), leptonicV.energy());
 
+
         j1metPhi_new_f = fabs(jet1phi_new_f - MET_phi_new);
         if (j1metPhi_new_f > Pi) {
             j1metPhi_new_f = 2.0 * Pi - j1metPhi_new_f;
@@ -2725,10 +2738,13 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             j2metPhi_new_f = 2.0 * Pi - j2metPhi_new_f;
         }
         Mjj_new_f      = (j1p4_f + j2p4_f).M();
+
+
         deltaeta_new_f = fabs(jet1eta_new_f - jet2eta_new_f);
         zepp_new_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
+std::cout<<"begin process old jets _f jec up!!!"<<std::endl;
 
     if (jetindexphoton12_JEC_up_f[0] > -1 && jetindexphoton12_JEC_up_f[1] > -1) {
         jet1pt_JEC_up_f   = jets[jetindexphoton12_JEC_up_f[0]]->Pt();
@@ -2770,6 +2786,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         zepp_JEC_up_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
+std::cout<<"begin process old jets _f jec down!!!"<<std::endl;
 
     if (jetindexphoton12_JEC_down_f[0] > -1 && jetindexphoton12_JEC_down_f[1] > -1) {
         jet1pt_JEC_down_f   = jets[jetindexphoton12_JEC_down_f[0]]->Pt();
@@ -2811,6 +2828,8 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         zepp_JEC_down_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
+std::cout<<"begin process old jets _f jer up!!!"<<std::endl;
+
     if (jetindexphoton12_JER_up_f[0] > -1 && jetindexphoton12_JER_up_f[1] > -1) {
         jet1pt_JER_up_f   = jets[jetindexphoton12_JER_up_f[0]]->Pt();
         jet1eta_JER_up_f  = jets[jetindexphoton12_JER_up_f[0]]->Eta();
@@ -2851,6 +2870,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         zepp_JER_up_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
 
+std::cout<<"begin process old jets _f jer down!!!"<<std::endl;
 
     if (jetindexphoton12_JER_down_f[0] > -1 && jetindexphoton12_JER_down_f[1] > -1) {
         jet1pt_JER_down_f   = jets[jetindexphoton12_JER_down_f[0]]->Pt();
@@ -2891,8 +2911,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         deltaeta_JER_down_f = fabs(jet1eta_JER_down_f - jet2eta_JER_down_f);
         zepp_JER_down_f     = fabs((vp4_f + photonp42_f).Rapidity() - (j1p4_f.Rapidity() + j2p4_f.Rapidity()) / 2.0);
     }
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+*/
 
     outTree_->Fill();
     delete jecAK4_;
@@ -3107,8 +3126,6 @@ void PKUTreeMaker::setDummyValues() {
     photonhaspixelseed_f = false;
     photonpasseleveto    = false;
     photonpasseleveto_f  = false;
-
-	_passecalBadCalibFilterUpdate = false;
 
     ISRPho              = false;
     dR_                 = 999;
@@ -3398,6 +3415,8 @@ void PKUTreeMaker::setDummyValues() {
     passFilter_EEBadSc_       	= false;
     passFilter_badMuon_       	= false;
     passFilter_badChargedHadron_= false;
+    passFilter_badChargedHadron_= false;
+
 }
 
 // ------------ method called once each job just before starting event loop  ------------
