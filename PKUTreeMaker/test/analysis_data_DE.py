@@ -176,7 +176,7 @@ if chsorpuppi:
 else:
       ak4jecsrc = jecLevelsAK4puppi
 
-process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
+process.load("RecoEgamma/PhotonIdentification/photonIDValueMapProducer_cfi")
 #from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD 
 ## Example 1: If you only want to re-correct MET and get the proper uncertainties [e.g. when updating JEC]
 #runMetCorAndUncFromMiniAOD(process,
