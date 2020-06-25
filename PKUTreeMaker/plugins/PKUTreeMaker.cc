@@ -243,6 +243,12 @@ private:
 
     //Jets
     int    jet1hf, jet1pf, jet2hf, jet2pf, jet1hf_f, jet1pf_f, jet2hf_f, jet2pf_f;
+	int    jet1hf_new, jet1pf_new, jet2hf_new, jet2pf_new, jet1hf_new_f, jet1pf_new_f, jet2hf_new_f, jet2pf_new_f;
+    int    jet1hf_JEC_up, jet1pf_JEC_up, jet2hf_JEC_up, jet2pf_JEC_up, jet1hf_JEC_up_f, jet1pf_JEC_up_f, jet2hf_JEC_up_f, jet2pf_JEC_up_f;
+    int    jet1hf_JEC_down, jet1pf_JEC_down, jet2hf_JEC_down, jet2pf_JEC_down, jet1hf_JEC_down_f, jet1pf_JEC_down_f, jet2hf_JEC_down_f, jet2pf_JEC_down_f;
+    int    jet1hf_JER_up, jet1pf_JER_up, jet2hf_JER_up, jet2pf_JER_up, jet1hf_JER_up_f, jet1pf_JER_up_f, jet2hf_JER_up_f, jet2pf_JER_up_f;
+    int    jet1hf_JER_down, jet1pf_JER_down, jet2hf_JER_down, jet2pf_JER_down, jet1hf_JER_down_f, jet1pf_JER_down_f, jet2hf_JER_down_f, jet2pf_JER_down_f;
+
     double Dphiwajj, Dphiwajj_f,Dphiwajj_new,Dphiwajj_JEC_up,Dphiwajj_JEC_down,Dphiwajj_JER_up,Dphiwajj_JER_down;
 
     double jet1pt, jet1eta, jet1phi, jet1e, jet1csv, jet1icsv;
@@ -665,6 +671,51 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     outTree_->Branch("jet1pf_f", &jet1pf_f, "jet1pf_f/I");
     outTree_->Branch("jet2hf_f", &jet2hf_f, "jet2hf_f/I");
     outTree_->Branch("jet2pf_f", &jet2pf_f, "jet2pf_f/I");
+
+    outTree_->Branch("jet1hf_new", &jet1hf_new, "jet1hf_new/I");
+    outTree_->Branch("jet1pf_new", &jet1pf_new, "jet1pf_new/I");
+    outTree_->Branch("jet2hf_new", &jet2hf_new, "jet2hf_new/I");
+    outTree_->Branch("jet2pf_new", &jet2pf_new, "jet2pf_new/I");
+    outTree_->Branch("jet1hf_new_f", &jet1hf_new_f, "jet1hf_new_f/I");
+    outTree_->Branch("jet1pf_new_f", &jet1pf_new_f, "jet1pf_new_f/I");
+    outTree_->Branch("jet2hf_new_f", &jet2hf_new_f, "jet2hf_new_f/I");
+    outTree_->Branch("jet2pf_new_f", &jet2pf_new_f, "jet2pf_new_f/I");
+
+    outTree_->Branch("jet1hf_JEC_up", &jet1hf_JEC_up, "jet1hf_JEC_up/I");
+    outTree_->Branch("jet1pf_JEC_up", &jet1pf_JEC_up, "jet1pf_JEC_up/I");
+    outTree_->Branch("jet2hf_JEC_up", &jet2hf_JEC_up, "jet2hf_JEC_up/I");
+    outTree_->Branch("jet2pf_JEC_up", &jet2pf_JEC_up, "jet2pf_JEC_up/I");
+    outTree_->Branch("jet1hf_JEC_up_f", &jet1hf_JEC_up_f, "jet1hf_JEC_up_f/I");
+    outTree_->Branch("jet1pf_JEC_up_f", &jet1pf_JEC_up_f, "jet1pf_JEC_up_f/I");
+    outTree_->Branch("jet2hf_JEC_up_f", &jet2hf_JEC_up_f, "jet2hf_JEC_up_f/I");
+    outTree_->Branch("jet2pf_JEC_up_f", &jet2pf_JEC_up_f, "jet2pf_JEC_up_f/I");
+
+    outTree_->Branch("jet1hf_JEC_down", &jet1hf_JEC_down, "jet1hf_JEC_down/I");
+    outTree_->Branch("jet1pf_JEC_down", &jet1pf_JEC_down, "jet1pf_JEC_down/I");
+    outTree_->Branch("jet2hf_JEC_down", &jet2hf_JEC_down, "jet2hf_JEC_down/I");
+    outTree_->Branch("jet2pf_JEC_down", &jet2pf_JEC_down, "jet2pf_JEC_down/I");
+    outTree_->Branch("jet1hf_JEC_down_f", &jet1hf_JEC_down_f, "jet1hf_JEC_down_f/I");
+    outTree_->Branch("jet1pf_JEC_down_f", &jet1pf_JEC_down_f, "jet1pf_JEC_down_f/I");
+    outTree_->Branch("jet2hf_JEC_down_f", &jet2hf_JEC_down_f, "jet2hf_JEC_down_f/I");
+    outTree_->Branch("jet2pf_JEC_down_f", &jet2pf_JEC_down_f, "jet2pf_JEC_down_f/I");
+
+    outTree_->Branch("jet1hf_JER_up", &jet1hf_JER_up, "jet1hf_JER_up/I");
+    outTree_->Branch("jet1pf_JER_up", &jet1pf_JER_up, "jet1pf_JER_up/I");
+    outTree_->Branch("jet2hf_JER_up", &jet2hf_JER_up, "jet2hf_JER_up/I");
+    outTree_->Branch("jet2pf_JER_up", &jet2pf_JER_up, "jet2pf_JER_up/I");
+    outTree_->Branch("jet1hf_JER_up_f", &jet1hf_JER_up_f, "jet1hf_JER_up_f/I");
+    outTree_->Branch("jet1pf_JER_up_f", &jet1pf_JER_up_f, "jet1pf_JER_up_f/I");
+    outTree_->Branch("jet2hf_JER_up_f", &jet2hf_JER_up_f, "jet2hf_JER_up_f/I");
+    outTree_->Branch("jet2pf_JER_up_f", &jet2pf_JER_up_f, "jet2pf_JER_up_f/I");
+
+    outTree_->Branch("jet1hf_JER_down", &jet1hf_JER_down, "jet1hf_JER_down/I");
+    outTree_->Branch("jet1pf_JER_down", &jet1pf_JER_down, "jet1pf_JER_down/I");
+    outTree_->Branch("jet2hf_JER_down", &jet2hf_JER_down, "jet2hf_JER_down/I");
+    outTree_->Branch("jet2pf_JER_down", &jet2pf_JER_down, "jet2pf_JER_down/I");
+    outTree_->Branch("jet1hf_JER_down_f", &jet1hf_JER_down_f, "jet1hf_JER_down_f/I");
+    outTree_->Branch("jet1pf_JER_down_f", &jet1pf_JER_down_f, "jet1pf_JER_down_f/I");
+    outTree_->Branch("jet2hf_JER_down_f", &jet2hf_JER_down_f, "jet2hf_JER_down_f/I");
+    outTree_->Branch("jet2pf_JER_down_f", &jet2pf_JER_down_f, "jet2pf_JER_down_f/I");
 
     outTree_->Branch("ak4jet_pt", ak4jet_pt, "ak4jet_pt[6]/D");
     outTree_->Branch("ak4jet_eta", ak4jet_eta, "ak4jet_eta[6]/D");
@@ -2253,7 +2304,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             ak4jet_icsv[ik] = (*ak4jets)[ik].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 
 			ak4jet_deepcsv_probb[ik]  = (*ak4jets)[ik].bDiscriminator("pfDeepCSVJetTags:probb");
-            ak4jet_deepcsv_probbb[ik]  = (*ak4jets)[ik].bDiscriminator("pfDeepCSVJetTags:probxb");
+            ak4jet_deepcsv_probbb[ik]  = (*ak4jets)[ik].bDiscriminator("pfDeepCSVJetTags:probbb");
             ak4jet_deepcsv_probc[ik]  = (*ak4jets)[ik].bDiscriminator("pfDeepCSVJetTags:probc");
             ak4jet_deepcsv_probcc[ik]  = (*ak4jets)[ik].bDiscriminator("pfDeepCSVJetTags:probcc");
 
@@ -2632,6 +2683,10 @@ if(ak4jets->size()>=1){
     }
     // variable concerning jet,new
     if (jetindexphoton12_new[0] > -1 && jetindexphoton12_new[1] > -1) {
+        jet1hf_new   = (*ak4jets)[jetindexphoton12_new[0]].hadronFlavour();
+        jet1pf_new   = (*ak4jets)[jetindexphoton12_new[0]].partonFlavour();
+        jet2hf_new   = (*ak4jets)[jetindexphoton12_new[1]].hadronFlavour();
+        jet2pf_new   = (*ak4jets)[jetindexphoton12_new[1]].partonFlavour();
         jet1pt_new   = jets_new[jetindexphoton12_new[0]]->Pt();
         jet1eta_new  = jets_new[jetindexphoton12_new[0]]->Eta();
         jet1phi_new  = jets_new[jetindexphoton12_new[0]]->Phi();
@@ -2683,6 +2738,11 @@ if(ak4jets->size()>=1){
     }
     // variable concerning jet, JEC up
     if (jetindexphoton12_JEC_up[0] > -1 && jetindexphoton12_JEC_up[1] > -1) {
+        jet1hf_JEC_up   = (*ak4jets)[jetindexphoton12_JEC_up[0]].hadronFlavour();
+        jet1pf_JEC_up   = (*ak4jets)[jetindexphoton12_JEC_up[0]].partonFlavour();
+        jet2hf_JEC_up   = (*ak4jets)[jetindexphoton12_JEC_up[1]].hadronFlavour();
+        jet2pf_JEC_up   = (*ak4jets)[jetindexphoton12_JEC_up[1]].partonFlavour();
+
         jet1pt_JEC_up   = jets_JEC_up[jetindexphoton12_JEC_up[0]]->Pt();
         jet1eta_JEC_up  = jets_JEC_up[jetindexphoton12_JEC_up[0]]->Eta();
         jet1phi_JEC_up  = jets_JEC_up[jetindexphoton12_JEC_up[0]]->Phi();
@@ -2734,7 +2794,12 @@ if(ak4jets->size()>=1){
     }
     // variable concerning jet, JEC down
     if (jetindexphoton12_JEC_down[0] > -1 && jetindexphoton12_JEC_down[1] > -1) {
-        jet1pt_JEC_down   = jets_JEC_down[jetindexphoton12_JEC_down[0]]->Pt();
+        jet1hf_JEC_down   = (*ak4jets)[jetindexphoton12_JEC_down[0]].hadronFlavour();
+        jet1pf_JEC_down   = (*ak4jets)[jetindexphoton12_JEC_down[0]].partonFlavour();
+        jet2hf_JEC_down   = (*ak4jets)[jetindexphoton12_JEC_down[1]].hadronFlavour();
+        jet2pf_JEC_down   = (*ak4jets)[jetindexphoton12_JEC_down[1]].partonFlavour();
+
+		jet1pt_JEC_down   = jets_JEC_down[jetindexphoton12_JEC_down[0]]->Pt();
         jet1eta_JEC_down  = jets_JEC_down[jetindexphoton12_JEC_down[0]]->Eta();
         jet1phi_JEC_down  = jets_JEC_down[jetindexphoton12_JEC_down[0]]->Phi();
         jet1e_JEC_down    = jets_JEC_down[jetindexphoton12_JEC_down[0]]->E();
@@ -2787,7 +2852,12 @@ if(ak4jets->size()>=1){
     }
     // variable concerning jet, JER up
     if (jetindexphoton12_JER_up[0] > -1 && jetindexphoton12_JER_up[1] > -1) {
-        jet1pt_JER_up   = jets_JER_up[jetindexphoton12_JER_up[0]]->Pt();
+        jet1hf_JER_up   = (*ak4jets)[jetindexphoton12_JER_up[0]].hadronFlavour();
+        jet1pf_JER_up   = (*ak4jets)[jetindexphoton12_JER_up[0]].partonFlavour();
+        jet2hf_JER_up   = (*ak4jets)[jetindexphoton12_JER_up[1]].hadronFlavour();
+        jet2pf_JER_up   = (*ak4jets)[jetindexphoton12_JER_up[1]].partonFlavour();
+
+		jet1pt_JER_up   = jets_JER_up[jetindexphoton12_JER_up[0]]->Pt();
         jet1eta_JER_up  = jets_JER_up[jetindexphoton12_JER_up[0]]->Eta();
         jet1phi_JER_up  = jets_JER_up[jetindexphoton12_JER_up[0]]->Phi();
         jet1e_JER_up    = jets_JER_up[jetindexphoton12_JER_up[0]]->E();
@@ -2841,7 +2911,12 @@ if(ak4jets->size()>=1){
     }
     // variable concerning jet, JER down
     if (jetindexphoton12_JER_down[0] > -1 && jetindexphoton12_JER_down[1] > -1) {
-        jet1pt_JER_down   = jets_JER_down[jetindexphoton12_JER_down[0]]->Pt();
+        jet1hf_JER_down   = (*ak4jets)[jetindexphoton12_JER_down[0]].hadronFlavour();
+        jet1pf_JER_down   = (*ak4jets)[jetindexphoton12_JER_down[0]].partonFlavour();
+        jet2hf_JER_down   = (*ak4jets)[jetindexphoton12_JER_down[1]].hadronFlavour();
+        jet2pf_JER_down   = (*ak4jets)[jetindexphoton12_JER_down[1]].partonFlavour();
+
+		jet1pt_JER_down   = jets_JER_down[jetindexphoton12_JER_down[0]]->Pt();
         jet1eta_JER_down  = jets_JER_down[jetindexphoton12_JER_down[0]]->Eta();
         jet1phi_JER_down  = jets_JER_down[jetindexphoton12_JER_down[0]]->Phi();
         jet1e_JER_down    = jets_JER_down[jetindexphoton12_JER_down[0]]->E();
@@ -2959,14 +3034,19 @@ if(ak4jets->size()>=1){
 /////////////////////////////
 
     if (jetindexphoton12_new_f[0] > -1 && jetindexphoton12_new_f[1] > -1) {
-        jet1pt_new_f   = jets[jetindexphoton12_new_f[0]]->Pt();
-        jet1eta_new_f  = jets[jetindexphoton12_new_f[0]]->Eta();
-        jet1phi_new_f  = jets[jetindexphoton12_new_f[0]]->Phi();
-        jet1e_new_f    = jets[jetindexphoton12_new_f[0]]->E();
-        jet2pt_new_f   = jets[jetindexphoton12_new_f[1]]->Pt();
-        jet2eta_new_f  = jets[jetindexphoton12_new_f[1]]->Eta();
-        jet2phi_new_f  = jets[jetindexphoton12_new_f[1]]->Phi();
-        jet2e_new_f    = jets[jetindexphoton12_new_f[1]]->E();
+        jet1hf_new_f   = (*ak4jets)[jetindexphoton12_new_f[0]].hadronFlavour();
+        jet1pf_new_f   = (*ak4jets)[jetindexphoton12_new_f[0]].partonFlavour();
+        jet2hf_new_f   = (*ak4jets)[jetindexphoton12_new_f[1]].hadronFlavour();
+        jet2pf_new_f   = (*ak4jets)[jetindexphoton12_new_f[1]].partonFlavour();
+
+		jet1pt_new_f   = jets_new[jetindexphoton12_new_f[0]]->Pt();
+        jet1eta_new_f  = jets_new[jetindexphoton12_new_f[0]]->Eta();
+        jet1phi_new_f  = jets_new[jetindexphoton12_new_f[0]]->Phi();
+        jet1e_new_f    = jets_new[jetindexphoton12_new_f[0]]->E();
+        jet2pt_new_f   = jets_new[jetindexphoton12_new_f[1]]->Pt();
+        jet2eta_new_f  = jets_new[jetindexphoton12_new_f[1]]->Eta();
+        jet2phi_new_f  = jets_new[jetindexphoton12_new_f[1]]->Phi();
+        jet2e_new_f    = jets_new[jetindexphoton12_new_f[1]]->E();
         jet1csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
@@ -3017,14 +3097,19 @@ if(ak4jets->size()>=1){
 
 
     if (jetindexphoton12_JEC_up_f[0] > -1 && jetindexphoton12_JEC_up_f[1] > -1) {
-        jet1pt_JEC_up_f   = jets[jetindexphoton12_JEC_up_f[0]]->Pt();
-        jet1eta_JEC_up_f  = jets[jetindexphoton12_JEC_up_f[0]]->Eta();
-        jet1phi_JEC_up_f  = jets[jetindexphoton12_JEC_up_f[0]]->Phi();
-        jet1e_JEC_up_f    = jets[jetindexphoton12_JEC_up_f[0]]->E();
-        jet2pt_JEC_up_f   = jets[jetindexphoton12_JEC_up_f[1]]->Pt();
-        jet2eta_JEC_up_f  = jets[jetindexphoton12_JEC_up_f[1]]->Eta();
-        jet2phi_JEC_up_f  = jets[jetindexphoton12_JEC_up_f[1]]->Phi();
-        jet2e_JEC_up_f    = jets[jetindexphoton12_JEC_up_f[1]]->E();
+        jet1hf_JEC_up_f   = (*ak4jets)[jetindexphoton12_JEC_up_f[0]].hadronFlavour();
+        jet1pf_JEC_up_f   = (*ak4jets)[jetindexphoton12_JEC_up_f[0]].partonFlavour();
+        jet2hf_JEC_up_f   = (*ak4jets)[jetindexphoton12_JEC_up_f[1]].hadronFlavour();
+        jet2pf_JEC_up_f   = (*ak4jets)[jetindexphoton12_JEC_up_f[1]].partonFlavour();
+
+		jet1pt_JEC_up_f   = jets_JEC_up[jetindexphoton12_JEC_up_f[0]]->Pt();
+        jet1eta_JEC_up_f  = jets_JEC_up[jetindexphoton12_JEC_up_f[0]]->Eta();
+        jet1phi_JEC_up_f  = jets_JEC_up[jetindexphoton12_JEC_up_f[0]]->Phi();
+        jet1e_JEC_up_f    = jets_JEC_up[jetindexphoton12_JEC_up_f[0]]->E();
+        jet2pt_JEC_up_f   = jets_JEC_up[jetindexphoton12_JEC_up_f[1]]->Pt();
+        jet2eta_JEC_up_f  = jets_JEC_up[jetindexphoton12_JEC_up_f[1]]->Eta();
+        jet2phi_JEC_up_f  = jets_JEC_up[jetindexphoton12_JEC_up_f[1]]->Phi();
+        jet2e_JEC_up_f    = jets_JEC_up[jetindexphoton12_JEC_up_f[1]]->E();
         jet1csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
@@ -3069,14 +3154,19 @@ if(ak4jets->size()>=1){
 
 
     if (jetindexphoton12_JEC_down_f[0] > -1 && jetindexphoton12_JEC_down_f[1] > -1) {
-        jet1pt_JEC_down_f   = jets[jetindexphoton12_JEC_down_f[0]]->Pt();
-        jet1eta_JEC_down_f  = jets[jetindexphoton12_JEC_down_f[0]]->Eta();
-        jet1phi_JEC_down_f  = jets[jetindexphoton12_JEC_down_f[0]]->Phi();
-        jet1e_JEC_down_f    = jets[jetindexphoton12_JEC_down_f[0]]->E();
-        jet2pt_JEC_down_f   = jets[jetindexphoton12_JEC_down_f[1]]->Pt();
-        jet2eta_JEC_down_f  = jets[jetindexphoton12_JEC_down_f[1]]->Eta();
-        jet2phi_JEC_down_f  = jets[jetindexphoton12_JEC_down_f[1]]->Phi();
-        jet2e_JEC_down_f    = jets[jetindexphoton12_JEC_down_f[1]]->E();
+        jet1hf_JEC_down_f   = (*ak4jets)[jetindexphoton12_JEC_down_f[0]].hadronFlavour();
+        jet1pf_JEC_down_f   = (*ak4jets)[jetindexphoton12_JEC_down_f[0]].partonFlavour();
+        jet2hf_JEC_down_f   = (*ak4jets)[jetindexphoton12_JEC_down_f[1]].hadronFlavour();
+        jet2pf_JEC_down_f   = (*ak4jets)[jetindexphoton12_JEC_down_f[1]].partonFlavour();
+
+		jet1pt_JEC_down_f   = jets_JEC_down[jetindexphoton12_JEC_down_f[0]]->Pt();
+        jet1eta_JEC_down_f  = jets_JEC_down[jetindexphoton12_JEC_down_f[0]]->Eta();
+        jet1phi_JEC_down_f  = jets_JEC_down[jetindexphoton12_JEC_down_f[0]]->Phi();
+        jet1e_JEC_down_f    = jets_JEC_down[jetindexphoton12_JEC_down_f[0]]->E();
+        jet2pt_JEC_down_f   = jets_JEC_down[jetindexphoton12_JEC_down_f[1]]->Pt();
+        jet2eta_JEC_down_f  = jets_JEC_down[jetindexphoton12_JEC_down_f[1]]->Eta();
+        jet2phi_JEC_down_f  = jets_JEC_down[jetindexphoton12_JEC_down_f[1]]->Phi();
+        jet2e_JEC_down_f    = jets_JEC_down[jetindexphoton12_JEC_down_f[1]]->E();
         jet1csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
@@ -3122,14 +3212,19 @@ if(ak4jets->size()>=1){
 
 
     if (jetindexphoton12_JER_up_f[0] > -1 && jetindexphoton12_JER_up_f[1] > -1) {
-        jet1pt_JER_up_f   = jets[jetindexphoton12_JER_up_f[0]]->Pt();
-        jet1eta_JER_up_f  = jets[jetindexphoton12_JER_up_f[0]]->Eta();
-        jet1phi_JER_up_f  = jets[jetindexphoton12_JER_up_f[0]]->Phi();
-        jet1e_JER_up_f    = jets[jetindexphoton12_JER_up_f[0]]->E();
-        jet2pt_JER_up_f   = jets[jetindexphoton12_JER_up_f[1]]->Pt();
-        jet2eta_JER_up_f  = jets[jetindexphoton12_JER_up_f[1]]->Eta();
-        jet2phi_JER_up_f  = jets[jetindexphoton12_JER_up_f[1]]->Phi();
-        jet2e_JER_up_f    = jets[jetindexphoton12_JER_up_f[1]]->E();
+        jet1hf_JER_up_f   = (*ak4jets)[jetindexphoton12_JER_up_f[0]].hadronFlavour();
+        jet1pf_JER_up_f   = (*ak4jets)[jetindexphoton12_JER_up_f[0]].partonFlavour();
+        jet2hf_JER_up_f   = (*ak4jets)[jetindexphoton12_JER_up_f[1]].hadronFlavour();
+        jet2pf_JER_up_f   = (*ak4jets)[jetindexphoton12_JER_up_f[1]].partonFlavour();
+
+		jet1pt_JER_up_f   = jets_JER_up[jetindexphoton12_JER_up_f[0]]->Pt();
+        jet1eta_JER_up_f  = jets_JER_up[jetindexphoton12_JER_up_f[0]]->Eta();
+        jet1phi_JER_up_f  = jets_JER_up[jetindexphoton12_JER_up_f[0]]->Phi();
+        jet1e_JER_up_f    = jets_JER_up[jetindexphoton12_JER_up_f[0]]->E();
+        jet2pt_JER_up_f   = jets_JER_up[jetindexphoton12_JER_up_f[1]]->Pt();
+        jet2eta_JER_up_f  = jets_JER_up[jetindexphoton12_JER_up_f[1]]->Eta();
+        jet2phi_JER_up_f  = jets_JER_up[jetindexphoton12_JER_up_f[1]]->Phi();
+        jet2e_JER_up_f    = jets_JER_up[jetindexphoton12_JER_up_f[1]]->E();
         jet1csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
@@ -3175,14 +3270,19 @@ if(ak4jets->size()>=1){
 
 
     if (jetindexphoton12_JER_down_f[0] > -1 && jetindexphoton12_JER_down_f[1] > -1) {
-        jet1pt_JER_down_f   = jets[jetindexphoton12_JER_down_f[0]]->Pt();
-        jet1eta_JER_down_f  = jets[jetindexphoton12_JER_down_f[0]]->Eta();
-        jet1phi_JER_down_f  = jets[jetindexphoton12_JER_down_f[0]]->Phi();
-        jet1e_JER_down_f    = jets[jetindexphoton12_JER_down_f[0]]->E();
-        jet2pt_JER_down_f   = jets[jetindexphoton12_JER_down_f[1]]->Pt();
-        jet2eta_JER_down_f  = jets[jetindexphoton12_JER_down_f[1]]->Eta();
-        jet2phi_JER_down_f  = jets[jetindexphoton12_JER_down_f[1]]->Phi();
-        jet2e_JER_down_f    = jets[jetindexphoton12_JER_down_f[1]]->E();
+        jet1hf_JER_down_f   = (*ak4jets)[jetindexphoton12_JER_down_f[0]].hadronFlavour();
+        jet1pf_JER_down_f   = (*ak4jets)[jetindexphoton12_JER_down_f[0]].partonFlavour();
+        jet2hf_JER_down_f   = (*ak4jets)[jetindexphoton12_JER_down_f[1]].hadronFlavour();
+        jet2pf_JER_down_f   = (*ak4jets)[jetindexphoton12_JER_down_f[1]].partonFlavour();
+
+		jet1pt_JER_down_f   = jets_JER_down[jetindexphoton12_JER_down_f[0]]->Pt();
+        jet1eta_JER_down_f  = jets_JER_down[jetindexphoton12_JER_down_f[0]]->Eta();
+        jet1phi_JER_down_f  = jets_JER_down[jetindexphoton12_JER_down_f[0]]->Phi();
+        jet1e_JER_down_f    = jets_JER_down[jetindexphoton12_JER_down_f[0]]->E();
+        jet2pt_JER_down_f   = jets_JER_down[jetindexphoton12_JER_down_f[1]]->Pt();
+        jet2eta_JER_down_f  = jets_JER_down[jetindexphoton12_JER_down_f[1]]->Eta();
+        jet2phi_JER_down_f  = jets_JER_down[jetindexphoton12_JER_down_f[1]]->Phi();
+        jet2e_JER_down_f    = jets_JER_down[jetindexphoton12_JER_down_f[1]]->E();
         jet1csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
@@ -3858,6 +3958,51 @@ void PKUTreeMaker::setDummyValues() {
     jet1pf_f 			= -1e1;
     jet2hf_f 			= -1e1;
     jet2pf_f 			= -1e1;
+
+    jet1hf_new              = -1e1;
+    jet1pf_new              = -1e1;
+    jet2hf_new              = -1e1;
+    jet2pf_new              = -1e1;
+    jet1hf_new_f            = -1e1;
+    jet1pf_new_f            = -1e1;
+    jet2hf_new_f            = -1e1;
+    jet2pf_new_f            = -1e1;
+
+    jet1hf_JEC_up              = -1e1;
+    jet1pf_JEC_up              = -1e1;
+    jet2hf_JEC_up              = -1e1;
+    jet2pf_JEC_up              = -1e1;
+    jet1hf_JEC_up_f            = -1e1;
+    jet1pf_JEC_up_f            = -1e1;
+    jet2hf_JEC_up_f            = -1e1;
+    jet2pf_JEC_up_f            = -1e1;
+
+    jet1hf_JEC_down              = -1e1;
+    jet1pf_JEC_down              = -1e1;
+    jet2hf_JEC_down              = -1e1;
+    jet2pf_JEC_down              = -1e1;
+    jet1hf_JEC_down_f            = -1e1;
+    jet1pf_JEC_down_f            = -1e1;
+    jet2hf_JEC_down_f            = -1e1;
+    jet2pf_JEC_down_f            = -1e1;
+
+    jet1hf_JER_up              = -1e1;
+    jet1pf_JER_up              = -1e1;
+    jet2hf_JER_up              = -1e1;
+    jet2pf_JER_up              = -1e1;
+    jet1hf_JER_up_f            = -1e1;
+    jet1pf_JER_up_f            = -1e1;
+    jet2hf_JER_up_f            = -1e1;
+    jet2pf_JER_up_f            = -1e1;
+
+    jet1hf_JER_down              = -1e1;
+    jet1pf_JER_down              = -1e1;
+    jet2hf_JER_down              = -1e1;
+    jet2pf_JER_down              = -1e1;
+    jet1hf_JER_down_f            = -1e1;
+    jet1pf_JER_down_f            = -1e1;
+    jet2hf_JER_down_f            = -1e1;
+    jet2pf_JER_down_f            = -1e1;
 
     passFilter_HBHE_    = false;
     passFilter_HBHEIso_ = false;
