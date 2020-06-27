@@ -12,4 +12,4 @@ git-cms-addpkg RecoEgamma/PhotonIdentification
 
 git cms-addpkg RecoMET/METFilters
 
-git clone -b 17 https://github.com/JINGFFF/fullRun2VBSWG.git VAJets
+git clone -b 17_Lepton https://github.com/JINGFFF/fullRun2VBSWG.git VAJets
