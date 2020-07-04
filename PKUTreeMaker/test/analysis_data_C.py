@@ -254,7 +254,7 @@ process.treeDumper = cms.EDAnalyzer("PKUTreeMaker",
 
                                     hltToken    = cms.InputTag("TriggerResults","","HLT"),
                                     elPaths1     = cms.vstring("HLT_Ele23_WPTight_Gsf_v*"),
-                                    elPaths2     = cms.vstring("HLT_Ele32 WPTight Gsf L1DoubleEG_v*"),
+                                    elPaths2     = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*"),
                                     muPaths1     = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"),
 #                                    muPaths2     = cms.vstring("HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"),
                                     muPaths2     = cms.vstring("HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"),
