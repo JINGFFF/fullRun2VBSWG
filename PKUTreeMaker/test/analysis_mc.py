@@ -15,9 +15,9 @@ process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAl
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 if runOnMC:
-   process.GlobalTag.globaltag = '94X_mc2017_realistic_v17'
+   process.GlobalTag.globaltag = '102X_mc2017_realistic_v8'
 elif not(runOnMC):
-   process.GlobalTag.globaltag = '94X_dataRun2_v11'
+   process.GlobalTag.globaltag = '102X_dataRun2_v13'
 
 ##########			                                                             
 hltFiltersProcessName = 'RECO'
@@ -37,7 +37,8 @@ process.load("VAJets.PKUCommon.goodJets_cff")
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,
 						runVID=False, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
-						era='2017-Nov17ReReco')
+                                                runEnergyCorrections=False,
+                                                era='2017-Nov17ReReco')
 
 # If Update
 process.goodMuons.src = "slimmedMuons"
