@@ -35,8 +35,10 @@ process.load("VAJets.PKUCommon.goodJets_cff")
 
 #for egamma smearing
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-setupEgammaPostRecoSeq(process,era='2018-Prompt')
-
+setupEgammaPostRecoSeq(process,
+                       era="2018-Prompt",
+		       runEnergyCorrections=False#True: do egamma_modification
+		      )
 # If Update
 process.goodMuons.src = "slimmedMuons"
 process.goodElectrons.src = "slimmedElectrons"
@@ -59,27 +61,27 @@ triggerSummaryLabel      = "hltTriggerSummaryAOD"
 hltProcess = "HLT"
 if runOnMC:
    jecLevelsAK4chs = [
-          'JEC/Autumn18_V19_MC_L1FastJet_AK4PFchs.txt',
-          'JEC/Autumn18_V19_MC_L2Relative_AK4PFchs.txt',
-          'JEC/Autumn18_V19_MC_L3Absolute_AK4PFchs.txt'
+          'Autumn18_V19_MC_L1FastJet_AK4PFchs.txt',
+          'Autumn18_V19_MC_L2Relative_AK4PFchs.txt',
+          'Autumn18_V19_MC_L3Absolute_AK4PFchs.txt'
     ]
    jecLevelsAK4puppi = [
-          'JEC/Autumn18_V19_MC_L1FastJet_AK4PFPuppi.txt',
-          'JEC/Autumn18_V19_MC_L2Relative_AK4PFPuppi.txt',
-          'JEC/Autumn18_V19_MC_L3Absolute_AK4PFPuppi.txt'
+          'Autumn18_V19_MC_L1FastJet_AK4PFPuppi.txt',
+          'Autumn18_V19_MC_L2Relative_AK4PFPuppi.txt',
+          'Autumn18_V19_MC_L3Absolute_AK4PFPuppi.txt'
     ]
 else:
    jecLevelsAK4chs = [
-          'JEC/Autumn18_RunB_V19_DATA_L1FastJet_AK4PFchs.txt',
-          'JEC/Autumn18_RunB_V19_DATA_L2Relative_AK4PFchs.txt',
-          'JEC/Autumn18_RunB_V19_DATA_L3Absolute_AK4PFchs.txt',
-          'JEC/Autumn18_RunB_V19_DATA_L2L3Residual_AK4PFchs.txt'
+          'Autumn18_RunB_V19_DATA_L1FastJet_AK4PFchs.txt',
+          'Autumn18_RunB_V19_DATA_L2Relative_AK4PFchs.txt',
+          'Autumn18_RunB_V19_DATA_L3Absolute_AK4PFchs.txt',
+          'Autumn18_RunB_V19_DATA_L2L3Residual_AK4PFchs.txt'
     ]
    jecLevelsAK4puppi = [
-          'JEC/Autumn18_RunB_V19_DATA_L1FastJet_AK4PFPuppi.txt',
-          'JEC/Autumn18_RunB_V19_DATA_L2Relative_AK4PFPuppi.txt',
-          'JEC/Autumn18_RunB_V19_DATA_L3Absolute_AK4PFPuppi.txt',
-          'JEC/Autumn18_RunB_V19_DATA_L2L3Residual_AK4PFPuppi.txt'
+          'Autumn18_RunB_V19_DATA_L1FastJet_AK4PFPuppi.txt',
+          'Autumn18_RunB_V19_DATA_L2Relative_AK4PFPuppi.txt',
+          'Autumn18_RunB_V19_DATA_L3Absolute_AK4PFPuppi.txt',
+          'Autumn18_RunB_V19_DATA_L2L3Residual_AK4PFPuppi.txt'
     ]
 
 
@@ -221,10 +223,10 @@ process.treeDumper = cms.EDAnalyzer("PKUTreeMaker",
 
                                     hltToken    = cms.InputTag("TriggerResults","","HLT"),
                                     elPaths1     = cms.vstring("HLT_Ele23_WPTight_Gsf_v*"),
-                                    elPaths2     = cms.vstring("HLT_Ele27_WPTight_Gsf_v*"),
+                                    elPaths2     = cms.vstring("HLT_Ele32_PTight_Gsf_v*"),
                                     muPaths1     = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"),
 									#muPaths2     = cms.vstring("HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"),
-                                    muPaths2     = cms.vstring("HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"),
+                                    muPaths2     = cms.vstring("HLT_IsoMu24_v*"),
                                     muPaths3     = cms.vstring("HLT_IsoMu27_v*","HLT_IsoTkMu27_v*"),
 				    				noiseFilter = cms.InputTag('TriggerResults','', hltFiltersProcessName),
 				    				noiseFilterSelection_HBHENoiseFilter = cms.string('Flag_HBHENoiseFilter'),
@@ -249,8 +251,8 @@ process.analysis = cms.Path(
                             process.leptonSequence +
                             process.jetSequence +
                             process.metfilterSequence + #*process.treeDumper)
-                            process.prefiringweight*process.treeDumper)
-							process.ecalBadCalibReducedMINIAODFilter*
+                            process.ecalBadCalibReducedMINIAODFilter*
+                            process.treeDumper)
 
 ### Source
 process.load("VAJets.PKUCommon.data.RSGravitonToWW_kMpl01_M_1000_Tune4C_13TeV_pythia8")
