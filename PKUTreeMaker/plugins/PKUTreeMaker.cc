@@ -127,9 +127,9 @@ private:
     edm::EDGetTokenT<edm::View<pat::Muon>>            loosemuonToken_;
 
     //L1 prefiring
-    edm::EDGetTokenT< double > prefweight_token;
-    edm::EDGetTokenT< double > prefweightup_token;
-    edm::EDGetTokenT< double > prefweightdown_token;
+    //edm::EDGetTokenT< double > prefweight_token;
+    //edm::EDGetTokenT< double > prefweightup_token;
+    //edm::EDGetTokenT< double > prefweightdown_token;
 
     // ecalbad
     edm::EDGetTokenT< bool >ecalBadCalibFilterUpdate_token;
@@ -177,7 +177,7 @@ private:
     double Mla_f, Mva_f;
     double ptlep1, etalep1, philep1, energylep1;
     int    lep, nlooseeles, nloosemus, ngoodeles, ngoodmus;
-    double _prefiringweight,_prefiringweightup,_prefiringweightdown;
+    //double _prefiringweight,_prefiringweightup,_prefiringweightdown;
     double met, metPhi, j1metPhi, j2metPhi;
     double j1metPhi_new, j1metPhi_JEC_up, j1metPhi_JEC_down, j1metPhi_JER_up, j1metPhi_JER_down;
     double j2metPhi_new, j2metPhi_JEC_up, j2metPhi_JEC_down, j2metPhi_JER_up, j2metPhi_JER_down;
@@ -470,9 +470,9 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     conversionsToken_   = (consumes<std::vector<reco::Conversion>>(iConfig.getParameter<edm::InputTag>("conversions")));
 
     //L1 prefiring
-    prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
-    prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
-    prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
+    //prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
+    //prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
+    //prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
     
     jetCorrLabel_ = jecAK4chsLabels_;
     offsetCorrLabel_.push_back(jetCorrLabel_[0]);
@@ -1170,9 +1170,9 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     outTree_->Branch("pileupWeight", &pileupWeight, "pileupWeight/D");
 
     //L1 prefiring
-  	outTree_->Branch("prefWeight"   ,&_prefiringweight,"prefWeight/D"  );
-   	outTree_->Branch("prefWeightUp" ,&_prefiringweightup,"prefWeightUp/D"  );
- 	outTree_->Branch("prefWeightDown",&_prefiringweightdown,"prefWeightDown/D"  );
+  	//outTree_->Branch("prefWeight"   ,&_prefiringweight,"prefWeight/D"  );
+   	//outTree_->Branch("prefWeightUp" ,&_prefiringweightup,"prefWeightUp/D"  );
+ 	//outTree_->Branch("prefWeightDown",&_prefiringweightdown,"prefWeightDown/D"  );
     //ecalbad
     outTree_->Branch("_passecalBadCalibFilterUpdate"   ,&_passecalBadCalibFilterUpdate,"_passecalBadCalibFilterUpdate/O"  );
 
@@ -1641,17 +1641,17 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
                 npIT = PVI->getPU_NumInteractions();
             }
         }
-		edm::Handle< double > theprefweight;
-		iEvent.getByToken(prefweight_token, theprefweight ) ;
-		_prefiringweight =(*theprefweight);
+		//edm::Handle< double > theprefweight;
+		//iEvent.getByToken(prefweight_token, theprefweight ) ;
+		//_prefiringweight =(*theprefweight);
 
-		edm::Handle< double > theprefweightup;
-		iEvent.getByToken(prefweightup_token, theprefweightup ) ;
-		_prefiringweightup =(*theprefweightup);
+		//edm::Handle< double > theprefweightup;
+		//iEvent.getByToken(prefweightup_token, theprefweightup ) ;
+		//_prefiringweightup =(*theprefweightup);
 
-		edm::Handle< double > theprefweightdown;
-		iEvent.getByToken(prefweightdown_token, theprefweightdown ) ;
-		_prefiringweightdown =(*theprefweightdown);
+		//edm::Handle< double > theprefweightdown;
+		//iEvent.getByToken(prefweightdown_token, theprefweightdown ) ;
+		//_prefiringweightdown =(*theprefweightdown);
     }
     Handle<TriggerResults> trigRes;
     iEvent.getByToken(hltToken_, trigRes);
@@ -3940,9 +3940,9 @@ void PKUTreeMaker::setDummyValues() {
     ispromptLep_  		= -1;
     lepton_istrue 		= -1;
 
-    _prefiringweight	=-10;
-    _prefiringweightup	=-10;
-    _prefiringweightdown=-10;
+    //_prefiringweight	=-10;
+    //_prefiringweightup	=-10;
+    //_prefiringweightdown=-10;
 
     HLT_Ele1 			= -99;
     HLT_Ele2 			= -99;
