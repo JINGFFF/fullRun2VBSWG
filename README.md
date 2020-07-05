@@ -10,4 +10,4 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools
 
 git cms-addpkg RecoMET/METFilters
 
-git clone -b 18 https://github.com/JINGFFF/fullRun2VBSWG.git VAJets
+git clone -b 18_fakeLepton https://github.com/JINGFFF/fullRun2VBSWG.git VAJets
