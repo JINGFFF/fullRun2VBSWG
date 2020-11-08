@@ -161,6 +161,7 @@ private:
     int    nevent, run, ls;
     int    nVtx;
     double triggerWeight, lumiWeight, pileupWeight;
+    double pweight[703];
     double theWeight;
     double nump = 0.;
     double numm = 0.;
@@ -377,6 +378,8 @@ private:
     bool passFilter_badChargedHadron_;
 
     edm::EDGetTokenT<GenEventInfoProduct>            GenToken_;
+    edm::EDGetTokenT<LHEEventProduct> LheToken_;
+
     edm::EDGetTokenT<reco::GenJetCollection>         genJet_;
     edm::EDGetTokenT<std::vector<PileupSummaryInfo>> PUToken_;
     edm::EDGetTokenT<edm::View<reco::Candidate>>     leptonicVSrc_;
@@ -436,7 +439,7 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     muPaths3_ = iConfig.getParameter<std::vector<std::string>>("muPaths3");
     GenToken_ = consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("generator"));
     genJet_   =consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("genJet"));
-    //  LheToken_=consumes<LHEEventProduct> (iConfig.getParameter<edm::InputTag>( "lhe") ) ;
+    LheToken_=consumes<LHEEventProduct> (iConfig.getParameter<edm::InputTag>( "lhe") ) ;
     PUToken_         = consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("pileup"));
     leptonicVSrc_    = consumes<edm::View<reco::Candidate>>(iConfig.getParameter<edm::InputTag>("leptonicVSrc"));
     ak4jetsSrc_      = consumes<edm::View<pat::Jet>>(iConfig.getParameter<edm::InputTag>("ak4jetsSrc"));
@@ -506,7 +509,7 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     outTree_->Branch("hasphoton", &hasphoton, "hasphoton/D");
     outTree_->Branch("ngoodmus", &ngoodmus, "ngoodmus/I");
     outTree_->Branch("ngoodeles", &ngoodeles, "ngoodeles/I");
-
+    outTree_->Branch("pweight",pweight,"pweight[703]/D");
     outTree_->Branch("jet1hf_orig",&jet1hf_orig,"jet1hf_orig/I");
     outTree_->Branch("jet1pf_orig",&jet1pf_orig,"jet1pf_orig/I");
     outTree_->Branch("jet2hf_orig",&jet2hf_orig,"jet2hf_orig/I");
@@ -1631,6 +1634,14 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             nump = nump + 1;
         if (theWeight < 0)
             numm = numm + 1;
+
+        edm::Handle<LHEEventProduct> wgtsource;
+        iEvent.getByToken(LheToken_, wgtsource);
+        for ( int i=0; i<703; ++i) {
+            pweight[i]= wgtsource->weights()[i].wgt/wgtsource->originalXWGTUP();
+        }
+
+
         edm::Handle<std::vector<PileupSummaryInfo>> PupInfo;
         iEvent.getByToken(PUToken_, PupInfo);
         std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -2080,8 +2091,11 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         edm::Handle<reco::BeamSpot> beamSpot;
         iEvent.getByToken(beamSpotToken_, beamSpot);
         edm::Handle<std::vector<reco::Conversion>> conversions;
+//cout<<"ok1"<<endl;
         iEvent.getByToken(conversionsToken_, conversions);
-        passEleVeto       = (!hasMatchedPromptElectron((*photons)[ip].superCluster(), electrons, conversions, beamSpot->position()));
+//cout<<"ok2"<<endl;
+        //if(hasphoton ==1)passEleVeto       = (!hasMatchedPromptElectron((*photons)[ip].superCluster(), electrons, conversions, beamSpot->position()));
+//cout<<"ok3"<<endl;
         passEleVetonew    = (*photons)[ip].passElectronVeto();
         passPixelSeedVeto = (*photons)[ip].hasPixelSeed();
 
@@ -2092,7 +2106,7 @@ void PKUTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             photon_e[ip]      = (*photons)[ip].energy();
             photonsc_eta[ip]  = phosc_eta;
             photonsc_phi[ip]  = phosc_phi;
-            photon_pev[ip]    = passEleVeto;
+            //photon_pev[ip]    = passEleVeto;
             photon_pevnew[ip] = passEleVetonew;
             photon_ppsv[ip]   = passPixelSeedVeto;
             photon_iseb[ip]   = (*photons)[ip].isEB();
@@ -3466,7 +3480,9 @@ void PKUTreeMaker::setDummyValues() {
     Dphiwajj_JER_up   	= -1e1;
     Dphiwajj_JER_down   = -1e1;
     // Marked for debug
-
+    for(int j=0; j<703; j++){
+	pweight[j]=-1.0;
+    }
     for (int i = 0; i < 6; i++) {
         ak4jet_hf[i]       	= -1e1;
         ak4jet_pf[i]       	= -1e1;

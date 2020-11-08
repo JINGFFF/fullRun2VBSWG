@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process( "TEST" )
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True),
-				     SkipEvent = cms.untracked.vstring('ProductNotFound'))
+				     SkipEvent = cms.untracked.vstring('ProductNotFound')
+)
 corrJetsOnTheFly = True
 runOnMC = False
 chsorpuppi = True  # AK4Chs or AK4Puppi
@@ -15,9 +16,9 @@ process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAl
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 if runOnMC:
-   process.GlobalTag.globaltag = '94X_mc2017_realistic_v17'
+   process.GlobalTag.globaltag = '102X_mc2017_realistic_v8'
 elif not(runOnMC):
-   process.GlobalTag.globaltag = '94X_dataRun2_v11'
+   process.GlobalTag.globaltag = '102X_dataRun2_v13'
 
 ##########			                                                             
 hltFiltersProcessName = 'RECO'
@@ -46,7 +47,7 @@ from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,
                        runVID=True,
                        runEnergyCorrections=False, #no point in re-running them, they are already fine
-                       era='2016-Legacy')  #era is new to select between 2016 / 2017,  it defaults to 2017
+                       era='2017-Nov17ReReco')  #era is new to select between 2016 / 2017,  it defaults to 2017
 
 #for egamma smearing
 
@@ -98,7 +99,7 @@ else:
 
 from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
 process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-    DataEra = cms.string("2016BtoH"),   #("2017BtoF"), #Use 2016BtoH for 2016
+    DataEra = cms.string("2017BtoF"),   #("2017BtoF"), #Use 2016BtoH for 2016
     UseJetEMPt = cms.bool(False),
     PrefiringRateSystematicUncty = cms.double(0.2),
     SkipWarnings = False)
@@ -255,7 +256,7 @@ process.treeDumper = cms.EDAnalyzer("PKUTreeMaker",
 
                                     hltToken    = cms.InputTag("TriggerResults","","HLT"),
                                     elPaths1     = cms.vstring("HLT_Ele23_WPTight_Gsf_v*"),
-                                    elPaths2     = cms.vstring("HLT_Ele32 WPTight Gsf L1DoubleEG_v*"),
+                                    elPaths2     = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*"),
                                     muPaths1     = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"),
 									#muPaths2     = cms.vstring("HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"),
                                     muPaths2     = cms.vstring("HLT_IsoMu24_v*","HLT_IsoTkMu24_v*"),
@@ -298,12 +299,14 @@ process.source.fileNames = [
 #"/store/mc/RunIISummer16MiniAODv2/WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/40000/A0C1C471-E704-E811-A1F2-008CFAF292B0.root"   #root://cms-xrd-global.cern.ch/
 #"/store/mc/RunIISummer16MiniAODv2/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v2/00000/EC2D608D-622A-E711-A658-002590D9D984.root"
 #"/store/mc/RunIISummer16MiniAODv2/WGJJToLNuGJJ_EWK_aQGC-FS-FM_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/F205A9E7-0BCE-E611-8617-008CFA5D275C.root"
-"/store/mc/RunIISummer16MiniAODv3/WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_94X_mc2017_realistic_v17-v1/70000/FADCF3F9-6247-E911-A86D-EC0D9A80980A.root"
+#"/store/mc/RunIISummer16MiniAODv3/WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_102X_mc2017_realistic_v8-v1/70000/FADCF3F9-6247-E911-A86D-EC0D9A80980A.root"
+#"/store/data/Run2017B/SingleMuon/MINIAOD/31Mar2018-v1/90000/FC2B7874-F538-E811-9C29-0025905A60A8.root"
+"/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/30000/04B05308-0038-E811-99AB-008CFAC94314.root"
 ]
 
-process.maxEvents.input = 100  #-1
+process.maxEvents.input = -1  #-1
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.FwkReport.limit = 99999999
 
 process.TFileService = cms.Service("TFileService",

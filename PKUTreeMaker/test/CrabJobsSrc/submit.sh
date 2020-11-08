@@ -1,4 +1,6 @@
 # MC sample
+crab submit -c ./CrabJobsSrc/MC/crab3_analysisDY_v1.py
+crab submit -c ./CrabJobsSrc/MC/crab3_analysisDY_v2.py
 crab submit -c ./CrabJobsSrc/MC/crab3_analysisLNuAJJ_EWK.py
 crab submit -c ./CrabJobsSrc/MC/crab3_analysisST_s.py
 crab submit -c ./CrabJobsSrc/MC/crab3_analysisST_t.py
