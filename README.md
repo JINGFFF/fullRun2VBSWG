@@ -10,4 +10,10 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools
 
 git-cms-addpkg RecoEgamma/PhotonIdentification
 
+<<<<<<< HEAD
 git clone https://github.com/JINGFFF/fullRun2VBSWG.git
+=======
+git cms-addpkg RecoMET/METFilters
+
+git clone -b 17 https://github.com/JINGFFF/fullRun2VBSWG.git VAJets
+>>>>>>> 17
