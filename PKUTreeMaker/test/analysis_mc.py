@@ -231,7 +231,11 @@ process.treeDumper = cms.EDAnalyzer("PKUTreeMaker",
                                     goodeleSrc = cms.InputTag("goodElectrons"),
 
                                     hltToken    = cms.InputTag("TriggerResults","","HLT"),
+<<<<<<< HEAD
                                     elPaths1     = cms.vstring("HLT_L1SingleEGOrFilter_v*"),
+=======
+                                    elPaths1     = cms.vstring("HLT_Ele23_WPTight_Gsf_v*"),
+>>>>>>> 812fa2ff6cbe268a1d991a9468ea980f82ca7a91
                                     elPaths2     = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*"),
                                     muPaths1     = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"),
 									#muPaths2     = cms.vstring("HLT_IsoMu22_v*","HLT_IsoTkMu22_v*"),

@@ -22,6 +22,9 @@ crab submit -c ./CrabJobsSrc/MC/crab3_analysisWW.py
 crab submit -c ./CrabJobsSrc/MC/crab3_analysisWZ.py
 crab submit -c ./CrabJobsSrc/MC/crab3_analysisZA.py
 crab submit -c ./CrabJobsSrc/MC/crab3_analysisZZ.py
+crab submit -c ./CrabJobsSrc/MC/crab3_analysisDY_v1.py
+crab submit -c ./CrabJobsSrc/MC/crab3_analysisDY_v2.py
+
 # muon
 crab submit -c ./CrabJobsSrc/SingleMu/crab3_analysis_smuB.py
 crab submit -c ./CrabJobsSrc/SingleMu/crab3_analysis_smuC.py
