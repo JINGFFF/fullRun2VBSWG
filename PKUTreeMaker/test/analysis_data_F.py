@@ -160,7 +160,38 @@ process.leptonSequence = cms.Sequence(process.muSequence +
                                       process.leptonicVSelector +
                                       process.leptonicVFilter )
 
-process.jetSequence = cms.Sequence(process.NJetsSequence)
+
+process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
+process.patJetCorrFactorsReapplyJEC = process.updatedPatJetCorrFactors.clone(
+  src = cms.InputTag("slimmedJets"),
+  levels = ['L1FastJet','L2Relative','L3Absolute'],
+  payload = 'AK4PFchs'
+)
+
+process.patJetsReapplyJEC = process.updatedPatJets.clone(
+  jetSource = cms.InputTag("slimmedJets"),
+  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+)
+#define the tightID jets
+
+#define the cleanJets
+process.cleanJets = cms.Sequence(process.NJetsSequence)
+#--- define the pileup id -------------------------------
+process.load("RecoJets.JetProducers.PileupJetID_cfi")
+process.pileupJetId.jets = cms.InputTag("cleanAK4Jets")
+process.pileupJetId.inputIsCorrected = True
+process.pileupJetId.applyJec = False
+process.pileupJetId.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
+
+
+process.jetSequence = cms.Sequence(
+                                 process.patJetCorrFactorsReapplyJEC*process.patJetsReapplyJEC
+                                 +process.goodAK4Jets
+                                 +process.cleanJets
+                                 +process.pileupJetId
+                                  )
+
+#process.jetSequence = cms.Sequence(process.NJetsSequence)
 
 
 process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
@@ -275,7 +306,10 @@ process.treeDumper = cms.EDAnalyzer("PKUTreeMaker",
                                     phoPhotonIsolation = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
                                     effAreaChHadFile = cms.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_V2.txt"),
                                     effAreaNeuHadFile= cms.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased.txt"),
-                                    effAreaPhoFile   = cms.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased.txt")
+                                    effAreaPhoFile   = cms.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased.txt"),
+                                    pileupJetId             = cms.InputTag('pileupJetId'),
+                                    pileupJetIdFlag         = cms.InputTag('pileupJetId:fullId'),
+                                    pileupJetIdDiscriminant = cms.InputTag('pileupJetId:fullDiscriminant')
                                     )
 
 process.analysis = cms.Path(

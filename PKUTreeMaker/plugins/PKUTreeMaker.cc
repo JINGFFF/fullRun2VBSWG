@@ -472,6 +472,14 @@ PKUTreeMaker::PKUTreeMaker(const edm::ParameterSet& iConfig)  //:
     PUToken_         = consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("pileup"));
     leptonicVSrc_    = consumes<edm::View<reco::Candidate>>(iConfig.getParameter<edm::InputTag>("leptonicVSrc"));
     ak4jetsSrc_      = consumes<edm::View<pat::Jet>>(iConfig.getParameter<edm::InputTag>("ak4jetsSrc"));
+
+    //pu jetID
+    pileupJetIdToken = consumes<edm::ValueMap<StoredPileupJetIdentifier> >(iConfig.getParameter<edm::InputTag>("pileupJetId"));
+    pileupJetIdFlagToken = consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("pileupJetIdFlag"));
+    pileupJetIdDiscriminantToken = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("pileupJetIdDiscriminant"));
+    //PU jetID
+
+
     photonSrc_       = consumes<edm::View<pat::Photon>>(iConfig.getParameter<edm::InputTag>("photonSrc"));
     genSrc_          = consumes<edm::View<reco::GenParticle>>(iConfig.getParameter<edm::InputTag>("genSrc"));
     metSrc_          = consumes<edm::View<reco::Candidate>>(iConfig.getParameter<edm::InputTag>("metSrc"));
@@ -3255,7 +3263,7 @@ if(ak4jets->size()>=1){
         jet2e_new_f    = jets_new[jetindexphoton12_new_f[1]]->E();
         jet1csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_new_f  = (*ak4jets)[jetindexphoton12_new_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-        int idflag1_new_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_new_F[0])];
+        int idflag1_new_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_new_f[0])];
         int idflag2_new_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_new_f[1])];
         jet1puIdLoose_new_f  =  (PileupJetIdentifier::passJetId(idflag1_new_f, PileupJetIdentifier::kLoose));
         jet1puIdMedium_new_f =  (PileupJetIdentifier::passJetId(idflag1_new_f, PileupJetIdentifier::kMedium));
@@ -3327,7 +3335,7 @@ if(ak4jets->size()>=1){
         jet1csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JEC_up_f  = (*ak4jets)[jetindexphoton12_JEC_up_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
-        int idflag1_JEC_up_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JEC_up_F[0])];
+        int idflag1_JEC_up_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JEC_up_f[0])];
         int idflag2_JEC_up_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JEC_up_f[1])];
         jet1puIdLoose_JEC_up_f  =  (PileupJetIdentifier::passJetId(idflag1_JEC_up_f, PileupJetIdentifier::kLoose));
         jet1puIdMedium_JEC_up_f =  (PileupJetIdentifier::passJetId(idflag1_JEC_up_f, PileupJetIdentifier::kMedium));
@@ -3393,7 +3401,7 @@ if(ak4jets->size()>=1){
         jet1csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JEC_down_f  = (*ak4jets)[jetindexphoton12_JEC_down_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
-        int idflag1_JEC_down_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JEC_down_F[0])];
+        int idflag1_JEC_down_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JEC_down_f[0])];
         int idflag2_JEC_down_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JEC_down_f[1])];
         jet1puIdLoose_JEC_down_f  =  (PileupJetIdentifier::passJetId(idflag1_JEC_down_f, PileupJetIdentifier::kLoose));
         jet1puIdMedium_JEC_down_f =  (PileupJetIdentifier::passJetId(idflag1_JEC_down_f, PileupJetIdentifier::kMedium));
@@ -3460,7 +3468,7 @@ if(ak4jets->size()>=1){
         jet1csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JER_up_f  = (*ak4jets)[jetindexphoton12_JER_up_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
-        int idflag1_JER_up_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JER_up_F[0])];
+        int idflag1_JER_up_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JER_up_f[0])];
         int idflag2_JER_up_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JER_up_f[1])];
         jet1puIdLoose_JER_up_f  =  (PileupJetIdentifier::passJetId(idflag1_JER_up_f, PileupJetIdentifier::kLoose));
         jet1puIdMedium_JER_up_f =  (PileupJetIdentifier::passJetId(idflag1_JER_up_f, PileupJetIdentifier::kMedium));
@@ -3527,7 +3535,7 @@ if(ak4jets->size()>=1){
         jet1csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[0]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
         jet2csv_JER_down_f  = (*ak4jets)[jetindexphoton12_JER_down_f[1]].bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 
-        int idflag1_JER_down_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JER_down_F[0])];
+        int idflag1_JER_down_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JER_down_f[0])];
         int idflag2_JER_down_f = (*pileupJetIdFlag)[ak4jets->refAt(jetindexphoton12_JER_down_f[1])];
         jet1puIdLoose_JER_down_f  =  (PileupJetIdentifier::passJetId(idflag1_JER_down_f, PileupJetIdentifier::kLoose));
         jet1puIdMedium_JER_down_f =  (PileupJetIdentifier::passJetId(idflag1_JER_down_f, PileupJetIdentifier::kMedium));
